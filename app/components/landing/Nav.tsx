@@ -2,10 +2,11 @@
 // the brand signature in Fraunces. "get bro" is the single loud thing.
 
 import Link from "next/link";
+import { MobileMenu } from "./MobileMenu";
 
 export function Nav() {
   return (
-    <nav className="relative z-20 mx-auto flex w-full max-w-6xl items-center justify-between px-8 py-7 sm:px-16">
+    <nav className="relative z-[60] mx-auto flex w-full max-w-6xl items-center justify-between px-8 py-7 sm:px-16">
       <Link
         href="/"
         className="bro-display text-2xl text-ink"
@@ -26,6 +27,7 @@ export function Nav() {
         >
           get bro
         </Link>
+        <MobileMenu />
       </div>
     </nav>
   );

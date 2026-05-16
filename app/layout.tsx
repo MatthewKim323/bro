@@ -1,18 +1,17 @@
 import type { Metadata } from "next";
 import { fraunces, inter } from "./fonts";
 import "./globals.css";
-import { Grain } from "@/app/components/Grain";
 import { LenisProvider } from "@/app/components/lenis-provider";
 
 export const metadata: Metadata = {
-  title: "bro — your always-on AI agent",
+  title: "bro, your always-on AI agent",
   description:
     "the bridge to jabby. talk to it, watch its mind grow, let it trade.",
   applicationName: "bro",
   authors: [{ name: "Kali Labs" }],
   metadataBase: new URL("https://bro.kalilabs.ai"),
   openGraph: {
-    title: "bro — your always-on AI agent",
+    title: "bro, your always-on AI agent",
     description:
       "the bridge to jabby. talk to it, watch its mind grow, let it trade.",
     siteName: "bro",
@@ -32,7 +31,6 @@ export default function RootLayout({
     >
       <body className="min-h-full antialiased">
         <LenisProvider>{children}</LenisProvider>
-        <Grain />
       </body>
     </html>
   );

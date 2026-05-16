@@ -10,7 +10,6 @@ import { Reveal } from "@/lib/motion";
 import { Nav } from "@/app/components/landing/Nav";
 import { IPhone } from "@/app/components/landing/IPhone";
 import { PhoneChat } from "@/app/components/landing/PhoneChat";
-import { SolanaPulse } from "@/app/components/landing/SolanaPulse";
 import { Features } from "@/app/components/landing/Features";
 import { Waitlist } from "@/app/components/landing/Waitlist";
 import { Footer } from "@/app/components/landing/Footer";
@@ -21,7 +20,7 @@ export default function Home() {
       <Nav />
 
       {/* ── hero: copy left, live bro phone right (Folk-style 2-col) ── */}
-      <section className="relative overflow-hidden">
+      <section id="top" className="relative overflow-hidden">
         <MatchaField />
         <DottedGrid corner="tr" size={320} />
 
@@ -61,7 +60,6 @@ export default function Home() {
         </div>
       </section>
 
-      <SolanaPulse />
       <Features />
       <Waitlist />
       <Footer />

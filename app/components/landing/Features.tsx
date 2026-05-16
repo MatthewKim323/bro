@@ -1,8 +1,10 @@
 // what bro actually is. every line is true to jabby + the plan. no
-// overpromising: the trading line says paper, the graph says private.
+// overpromising. each of the four is its own full-screen section: a
+// tracked label, one big Fraunces statement, a quiet line. no scroll
+// library, calm reveal only.
 
 import { Label } from "@/app/components/Label";
-import { Reveal, Stagger } from "@/lib/motion";
+import { Reveal } from "@/lib/motion";
 
 const FEATURES = [
   {
@@ -29,26 +31,28 @@ const FEATURES = [
 
 export function Features() {
   return (
-    <section className="mx-auto w-full max-w-6xl px-8 py-28 sm:px-16">
-      <Reveal>
-        <Label>what it is</Label>
-        <h2 className="bro-display mt-4 max-w-2xl text-4xl text-ink sm:text-5xl">
-          not an assistant. a presence.
-        </h2>
-      </Reveal>
-      <Stagger className="mt-14 grid gap-px overflow-hidden rounded-bro border border-line bg-line sm:grid-cols-2">
-        {FEATURES.map((f) => (
-          <Reveal key={f.k}>
-            <div className="h-full bg-bg p-9">
+    <>
+      {FEATURES.map((f, i) => (
+        <section
+          key={f.k}
+          id={i === 0 ? "features" : undefined}
+          className={`w-full scroll-mt-24 ${
+            i % 2 === 1 ? "bg-surface" : "bg-bg"
+          }`}
+        >
+          <div className="mx-auto flex min-h-[80vh] max-w-6xl flex-col justify-center px-8 py-28 sm:px-16">
+            <Reveal>
               <Label>{f.k}</Label>
-              <h3 className="bro-display mt-4 text-2xl text-ink">{f.t}</h3>
-              <p className="bro-body mt-3 text-[15px] leading-relaxed">
+              <h3 className="bro-display mt-6 max-w-4xl text-6xl leading-[1.02] text-ink sm:text-8xl">
+                {f.t}
+              </h3>
+              <p className="bro-body mt-8 max-w-xl text-xl leading-relaxed sm:text-2xl">
                 {f.d}
               </p>
-            </div>
-          </Reveal>
-        ))}
-      </Stagger>
-    </section>
+            </Reveal>
+          </div>
+        </section>
+      ))}
+    </>
   );
 }

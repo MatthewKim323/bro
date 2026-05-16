@@ -60,7 +60,7 @@ export function Waitlist() {
   }
 
   return (
-    <section className="relative mx-auto mt-28 w-full max-w-6xl overflow-hidden rounded-bro px-8 py-24 sm:px-16">
+    <section id="waitlist" className="relative mx-auto mt-28 w-full max-w-6xl scroll-mt-24 overflow-hidden rounded-bro px-8 py-24 sm:px-16">
       <MatchaField variant="soft" />
       <div className="relative z-10 max-w-xl">
         <Reveal>
