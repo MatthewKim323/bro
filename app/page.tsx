@@ -21,35 +21,34 @@ export default function Home() {
   return (
     <main>
       {/* ── hero specimen ───────────────────────────────────── */}
-      <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6">
+      <section className="relative flex min-h-screen items-center overflow-hidden">
         <MatchaField />
         <DottedGrid corner="tr" size={320} />
 
-        <div className="relative z-10 mx-auto max-w-3xl text-center">
-          <Reveal>
-            <span className="bro-label">always on. always yours.</span>
-          </Reveal>
-          <Reveal delay={0.08}>
-            <h1 className="bro-display mt-6 text-[clamp(3rem,8vw,4.75rem)] text-ink">
-              your always-on AI agent.
-            </h1>
-          </Reveal>
-          <Reveal delay={0.16}>
-            <p className="bro-body mx-auto mt-6 max-w-xl text-lg">
-              lives in discord, telegram, or the web. learns your world.
-              helps you think, remember, and ship.
-            </p>
-          </Reveal>
-          <Reveal delay={0.24}>
-            <div className="mt-10 flex items-center justify-center gap-4">
-              <span className="rounded-bro bg-accent px-6 py-3 text-sm font-medium text-bg">
-                get bro
-              </span>
-              <span className="text-sm text-soft underline underline-offset-4">
-                see how it works
-              </span>
-            </div>
-          </Reveal>
+        <div className="relative z-10 w-full max-w-6xl px-8 sm:px-16">
+          <div className="max-w-2xl">
+            <Reveal>
+              <h1 className="bro-display text-[clamp(5rem,16vw,12rem)] leading-none text-ink">
+                bro.
+              </h1>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p className="bro-body mt-8 max-w-xl text-xl leading-relaxed sm:text-2xl">
+                not an assistant. your bro. it knows your whole world,
+                remembers everything, and never logs off.
+              </p>
+            </Reveal>
+            <Reveal delay={0.2}>
+              <div className="mt-12 flex items-center gap-5">
+                <span className="rounded-bro bg-accent px-7 py-3.5 text-sm font-medium text-bg">
+                  get bro
+                </span>
+                <span className="text-sm text-soft underline underline-offset-4">
+                  see how it works
+                </span>
+              </div>
+            </Reveal>
+          </div>
         </div>
       </section>
 

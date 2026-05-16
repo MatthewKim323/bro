@@ -61,32 +61,26 @@ body {
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
+  /* a real matcha wash: green cast across the whole field, lighter
+     through the center, deepening to sage at the edges + corners.
+     no white lift (it was washing the green out). */
   background:
-    /* perimeter sage vignette, fully inside the box (darkest at 100%) */
     radial-gradient(
-      115% 115% at 50% 45%,
-      var(--color-bg) 0%,
-      var(--color-bg) 30%,
-      color-mix(in oklab, var(--color-matcha) 40%, var(--color-bg)) 62%,
-      color-mix(in oklab, var(--color-matcha) 64%, var(--color-bg)) 82%,
-      color-mix(in oklab, var(--color-sage-deep) 64%, var(--color-bg)) 100%
-    ),
-    /* warm luminous center, like the inspo */
-    radial-gradient(
-      55% 50% at 50% 42%,
-      color-mix(in oklab, #ffffff 45%, transparent) 0%,
-      transparent 70%
+      125% 120% at 50% 40%,
+      color-mix(in oklab, var(--color-matcha) 16%, var(--color-bg)) 0%,
+      color-mix(in oklab, var(--color-matcha) 30%, var(--color-bg)) 40%,
+      color-mix(in oklab, var(--color-matcha) 52%, var(--color-bg)) 74%,
+      color-mix(in oklab, var(--color-sage-deep) 58%, var(--color-bg)) 100%
     ),
     var(--color-bg);
 }
 .bro-matcha-field--soft {
   background:
     radial-gradient(
-      120% 120% at 50% 48%,
-      var(--color-bg) 0%,
-      var(--color-bg) 50%,
-      color-mix(in oklab, var(--color-matcha) 30%, var(--color-bg)) 80%,
-      color-mix(in oklab, var(--color-sage-deep) 38%, var(--color-bg)) 100%
+      125% 125% at 50% 45%,
+      color-mix(in oklab, var(--color-matcha) 10%, var(--color-bg)) 0%,
+      color-mix(in oklab, var(--color-matcha) 22%, var(--color-bg)) 55%,
+      color-mix(in oklab, var(--color-sage-deep) 40%, var(--color-bg)) 100%
     ),
     var(--color-bg);
 }
@@ -97,8 +91,8 @@ body {
   inset: 0;
   z-index: 40;
   pointer-events: none;
-  mix-blend-mode: soft-light;
-  opacity: 0.2;
+  mix-blend-mode: overlay;
+  opacity: 0.12;
 }
 
 /* ─────────────── signature: dotted grid ─────────────────── */
