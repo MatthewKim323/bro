@@ -61,16 +61,15 @@ body {
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  /* a real matcha wash: green cast across the whole field, lighter
-     through the center, deepening to sage at the edges + corners.
-     no white lift (it was washing the green out). */
+  /* a real matcha wash: clearly green even through the center, where
+     content sits, deepening to sage at the edges + corners. */
   background:
     radial-gradient(
-      125% 120% at 50% 40%,
-      color-mix(in oklab, var(--color-matcha) 16%, var(--color-bg)) 0%,
-      color-mix(in oklab, var(--color-matcha) 30%, var(--color-bg)) 40%,
-      color-mix(in oklab, var(--color-matcha) 52%, var(--color-bg)) 74%,
-      color-mix(in oklab, var(--color-sage-deep) 58%, var(--color-bg)) 100%
+      125% 120% at 50% 38%,
+      color-mix(in oklab, var(--color-matcha) 38%, var(--color-bg)) 0%,
+      color-mix(in oklab, var(--color-matcha) 56%, var(--color-bg)) 42%,
+      color-mix(in oklab, var(--color-sage-deep) 64%, var(--color-bg)) 78%,
+      color-mix(in oklab, var(--color-sage-deep) 90%, var(--color-bg)) 100%
     ),
     var(--color-bg);
 }
@@ -78,9 +77,9 @@ body {
   background:
     radial-gradient(
       125% 125% at 50% 45%,
-      color-mix(in oklab, var(--color-matcha) 10%, var(--color-bg)) 0%,
-      color-mix(in oklab, var(--color-matcha) 22%, var(--color-bg)) 55%,
-      color-mix(in oklab, var(--color-sage-deep) 40%, var(--color-bg)) 100%
+      color-mix(in oklab, var(--color-matcha) 24%, var(--color-bg)) 0%,
+      color-mix(in oklab, var(--color-matcha) 42%, var(--color-bg)) 55%,
+      color-mix(in oklab, var(--color-sage-deep) 60%, var(--color-bg)) 100%
     ),
     var(--color-bg);
 }
@@ -92,7 +91,7 @@ body {
   z-index: 40;
   pointer-events: none;
   mix-blend-mode: overlay;
-  opacity: 0.12;
+  opacity: 0.08;
 }
 
 /* ─────────────── signature: dotted grid ─────────────────── */
