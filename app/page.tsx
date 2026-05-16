@@ -2,6 +2,7 @@
 // matcha field + grain + dotted grid + Fraunces/Inter system reads as
 // the inspo before we build the real landing (phase 1 replaces this).
 
+import Link from "next/link";
 import { MatchaField } from "@/app/components/MatchaField";
 import { DottedGrid } from "@/app/components/DottedGrid";
 import { Reveal, Stagger } from "@/lib/motion";
@@ -40,9 +41,12 @@ export default function Home() {
             </Reveal>
             <Reveal delay={0.2}>
               <div className="mt-12 flex items-center gap-5">
-                <span className="rounded-bro bg-accent px-7 py-3.5 text-sm font-medium text-bg">
+                <Link
+                  href="/app"
+                  className="rounded-bro bg-accent px-7 py-3.5 text-sm font-medium text-bg transition-opacity duration-200 ease-[var(--ease-bro)] hover:opacity-85"
+                >
                   get bro
-                </span>
+                </Link>
                 <span className="text-sm text-soft underline underline-offset-4">
                   see how it works
                 </span>
