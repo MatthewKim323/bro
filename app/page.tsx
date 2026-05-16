@@ -1,28 +1,26 @@
-// TEMPORARY: signature verification specimen for phase 0. proves the
-// matcha field + grain + dotted grid + Fraunces/Inter system reads as
-// the inspo before we build the real landing (phase 1 replaces this).
+// the bro landing. one locked design system (split matcha field +
+// grain + Fraunces). every sponsor integration powers a real, visible
+// feature on this page: Solana (live pulse), Backboard (talk to bro),
+// MongoDB Atlas (waitlist). nothing faked.
 
 import Link from "next/link";
 import { MatchaField } from "@/app/components/MatchaField";
 import { DottedGrid } from "@/app/components/DottedGrid";
-import { Reveal, Stagger } from "@/lib/motion";
-
-const SWATCHES = [
-  ["bg", "#f4f3ef"],
-  ["surface", "#e4e8dc"],
-  ["matcha", "#a8b89a"],
-  ["sage-deep", "#7e9270"],
-  ["accent", "#5e7351"],
-  ["ink", "#23241f"],
-  ["soft", "#7c8a72"],
-  ["line", "#e0e2d7"],
-] as const;
+import { Reveal } from "@/lib/motion";
+import { Nav } from "@/app/components/landing/Nav";
+import { SolanaPulse } from "@/app/components/landing/SolanaPulse";
+import { TalkToBro } from "@/app/components/landing/TalkToBro";
+import { Features } from "@/app/components/landing/Features";
+import { Waitlist } from "@/app/components/landing/Waitlist";
+import { Footer } from "@/app/components/landing/Footer";
 
 export default function Home() {
   return (
     <main>
-      {/* ── hero specimen ───────────────────────────────────── */}
-      <section className="relative flex min-h-screen items-center overflow-hidden">
+      <Nav />
+
+      {/* ── hero ────────────────────────────────────────────── */}
+      <section className="relative flex min-h-[88vh] items-center overflow-hidden">
         <MatchaField />
         <DottedGrid corner="tr" size={320} />
 
@@ -47,49 +45,23 @@ export default function Home() {
                 >
                   get bro
                 </Link>
-                <span className="text-sm text-soft underline underline-offset-4">
+                <a
+                  href="#talk"
+                  className="text-sm text-soft underline underline-offset-4 transition-opacity hover:opacity-70"
+                >
                   see how it works
-                </span>
+                </a>
               </div>
             </Reveal>
           </div>
         </div>
       </section>
 
-      {/* ── palette + scroll/motion check ───────────────────── */}
-      <section className="relative mx-auto max-w-5xl px-6 py-32">
-        <Reveal>
-          <span className="bro-label">the locked palette</span>
-        </Reveal>
-        <Reveal delay={0.06}>
-          <h2 className="bro-display mt-4 text-4xl text-ink">
-            matcha, sampled not eyeballed.
-          </h2>
-        </Reveal>
-
-        <Stagger className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {SWATCHES.map(([name, hex]) => (
-            <Reveal key={name}>
-              <div className="overflow-hidden rounded-bro border border-line">
-                <div className="h-28" style={{ backgroundColor: hex }} />
-                <div className="bg-surface px-4 py-3">
-                  <div className="text-sm text-ink">{name}</div>
-                  <div className="font-mono text-xs text-soft">{hex}</div>
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </Stagger>
-
-        <Reveal delay={0.1}>
-          <p className="bro-body mt-16 max-w-2xl text-lg">
-            grain sits over everything in soft-light, the field melts deep
-            sage at the edges into cream at the center, and the type pairs a
-            soft serif display with a quiet sans. if this reads luxurious and
-            calm, the foundation is right.
-          </p>
-        </Reveal>
-      </section>
+      <SolanaPulse />
+      <TalkToBro />
+      <Features />
+      <Waitlist />
+      <Footer />
     </main>
   );
 }
