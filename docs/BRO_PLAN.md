@@ -2,8 +2,15 @@
 
 **the bridge to jabby.** a calm, luxurious web surface for an always-on personal AI agent: chat with it, watch its mind grow, let it trade.
 
-> status: planning. nothing built yet. this doc is the source of truth.
-> built for a design competition. the UI/UX is the product. it has to feel inevitable, not learned.
+> status: **building.** foundation + a real landing are shipped; the `/app`
+> bridge (shell + knowledge graph) is in progress. this doc is the source of truth.
+>
+> built for a hackathon. targeted tracks: **Framer-tier design**, **Best Use of
+> Solana**, **Best Use of Backboard**, **Best Use of MongoDB Atlas**. every one
+> is a *real* integration powering a real, visible feature on the landing.
+> nothing is faked or stubbed-to-look-used. an integration without a key
+> degrades to an honest "not configured" state, it never fakes success. the
+> UI/UX is still the product: it has to feel inevitable, not learned.
 
 ---
 
@@ -477,6 +484,17 @@ jabby trades by calling a **bro-local tool**, not by driving a UI and not by tou
 - **fonts**: `next/font/google` Fraunces (`--font-display`) + Inter (`--font-sans`).
 - **local store**: lightweight (SQLite via a small server-side layer, or JSON + IndexedDB split). decided at the persistence phase.
 - **jabby / gbrain**: unchanged. consumed as services. jabby = Bun daemon, gbrain = CLI 0.32.5.
+- **real sponsor integrations (landing, hella minimal, all genuine)**:
+  - **Solana**: `lib/solana.ts` + `GET /api/solana/pulse`. one real `getEpochInfo`
+    JSON-RPC call to mainnet, surfaced as a live pulse strip. no key, no wallet,
+    no signing (read-only). verified live (`slot`/`epoch` tick).
+  - **Backboard**: `lib/backboard.ts` + `POST /api/bro/ask`. real call to
+    `app.backboard.io/api/threads/messages` (`X-API-Key`), `thread_id` kept for
+    genuine persistent memory across the "talk to bro" demo.
+  - **MongoDB Atlas**: `lib/mongo.ts` + `/api/waitlist`. real write + count
+    on one collection (the `mongodb` driver, HMR-cached client).
+  - all three are env-driven (`.env.example`), server-side only (keys never
+    reach the browser), and degrade to honest "not configured" without creds.
 - **deploy**: Vercel, landing only. `BRO_MODE` gates `/app` off in the public build.
 
 no state library cargo-cult: server data via route handlers + a thin fetch layer, local UI state with React. add a store only if a panel proves it needs one.
@@ -517,6 +535,14 @@ no state library cargo-cult: server data via route handlers + a thin fetch layer
 ## 13. build roadmap
 
 boil the ocean, but in an order where every phase ends in something you can look at. no time pressure, quality over speed.
+
+> progress: **phase 0 done** (foundation + locked signature, verified vs the
+> inspo). **landing done** and reworked for the hackathon: real Solana / Backboard
+> / MongoDB Atlas integrations woven into real sections (this replaced the
+> "9 marketing sections" plan below with: nav, hero, Solana pulse, talk-to-bro,
+> features, waitlist, footer). **phase 2 (app shell + knowledge graph) in
+> progress.** the phases below are the original arc; the landing's scope shifted
+> to serve the four tracks honestly.
 
 **phase 0 — foundation**
 - scaffold Next 16 in `~/Documents/bro`, add motion + lenis, read `node_modules/next/dist/docs/`
@@ -562,7 +588,8 @@ each phase: build → screenshot-verify desktop + mobile → commit atomically.
 ## 14. non-goals
 
 - the **deployed** site has no jabby connection, ever. landing is marketing only, by construction (`BRO_MODE`), not by promise.
-- **no real money.** no real Solana keypair, RPC, signatures, or funds. paper only. if this ever changes it is a new project with its own threat model, not a tweak.
+- **no real money.** trading stays paper: no real Solana keypair, signatures, or funds. the real Solana integration is a **read-only** mainnet RPC call (a live stat), which touches no money and is not the trading engine. if real trading ever happens it is a new project with its own threat model, not a tweak.
+- **no faked sponsor usage.** the hackathon tracks are won with real integrations or not entered. faking "we used X" was explicitly considered and rejected (see §15). an unconfigured integration says so honestly.
 - jabby's repo is not modified (one possible read-only MCP-registration exception, §15, with consent).
 - no mobile-native app. responsive web is the target.
 - no dark mode in v1 (honest roadmap item, not a fake toggle).
@@ -583,6 +610,11 @@ each phase: build → screenshot-verify desktop + mobile → commit atomically.
 - knowledge graph = **interactive force-graph explorer**. ✓
 - design comp entry: UX must "come naturally," no manual. elevated, sleek, minimal, luxurious. ✓
 - palette locked from `bro inspo.png`. no time constraints, quality over speed. ✓
+- **hackathon**: targeting Framer-tier design + Best Use of Solana / Backboard / MongoDB Atlas. ✓
+- **faking sponsor integrations was proposed, then rejected.** decoy imports / fake routing to look like we used Mongo + Backboard would be cheating judged prize tracks (MLH DQs misrepresentation, it follows the name across events, and it burns teams who built it for real). chose **real but hella minimal** integrations instead: each is genuine and powers one visible feature. ✓
+- landing scope shifted from "9 marketing sections" to a focused real landing where each sponsor powers a section (Solana pulse, talk-to-bro, waitlist). ✓
+- **git attribution**: commits/pushes are matt's, attributed to MatthewKim323. no AI co-author trailer. ✓
+- `BRO_PLAN.md` moved to `docs/BRO_PLAN.md` (parallel work); README + AGENTS.md repointed. ✓
 
 **open (resolve at the phase, not now):**
 1. force-graph library: decided by a perf spike in phase 4 (must do worker + LOD).
