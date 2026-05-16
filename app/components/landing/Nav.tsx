@@ -15,12 +15,6 @@ export function Nav() {
       </Link>
       <div className="flex items-center gap-7 text-sm text-soft">
         <a
-          href="#talk"
-          className="hidden transition-opacity hover:opacity-70 sm:inline"
-        >
-          talk to bro
-        </a>
-        <a
           href="#stack"
           className="hidden transition-opacity hover:opacity-70 sm:inline"
         >
