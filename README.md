@@ -32,7 +32,7 @@ Next.js 16 + React 19 + Tailwind v4. Bun is the package manager and runtime.
 
 ## design system (locked)
 
-palette is sampled directly from the Kali Labs banner, not eyeballed. cream
+the palette is bro's own, designed from scratch, not sampled. cream
 canvas, soft sage, matcha, forest ink. Fraunces (display) + Inter (body).
 the signature is a soft matcha-field vignette + film grain + a single
 dotted-grid corner. depth comes from tone and grain, never shadow. see

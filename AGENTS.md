@@ -16,7 +16,7 @@ architecture, the bridge contract, design system, and the build roadmap.
    Use commas, periods, parens, colons, or "..." instead. They read as an LLM tell.
 2. **Truthful copy only.** Never claim a capability bro/jabby does not have.
    Roadmap things are labeled as roadmap.
-3. **The design system is LOCKED.** Palette is sampled from the Kali Labs banner
+3. **The design system is LOCKED.** Palette is bro's own original system
    (`app/tokens.css`). Fraunces + Inter. Do not introduce new colors, a second
    radius, drop shadows, or dark mode without a deliberate decision logged in
    `docs/BRO_PLAN.md` §15.

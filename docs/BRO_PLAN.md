@@ -104,11 +104,11 @@ this is a design competition. this section is the product. it is locked unless w
 
 > elevated, sleek, minimal, luxurious, calm. it should feel like it costs money and respects your attention.
 
-reference vibe: getfolk.app's restraint and density, but the palette and mood come from matt's Kali Labs banner: a soft, film-grained noisy matcha gradient melting into cream, forest ink, a refined serif, tiny tracked-out labels, whisper-low-contrast body copy, and a lot of negative space.
+reference vibe: getfolk.app's restraint and density, but the palette and mood are bro's own, designed from scratch: a soft, film-grained noisy matcha gradient melting into cream, forest ink, a refined serif, tiny tracked-out labels, whisper-low-contrast body copy, and a lot of negative space.
 
 it is **not** playful, neon, glassy, gradient-button, or "AI startup." no purple. no glow. no drop shadows doing the work that tone should do.
 
-### 3.2 palette (sampled directly from `~/Downloads/bro inspo.png`, do not eyeball)
+### 3.2 palette (bro's own system, locked, do not eyeball-edit)
 
 | token | hex | role |
 |---|---|---|
@@ -536,8 +536,8 @@ no state library cargo-cult: server data via route handlers + a thin fetch layer
 
 boil the ocean, but in an order where every phase ends in something you can look at. no time pressure, quality over speed.
 
-> progress: **phase 0 done** (foundation + locked signature, verified vs the
-> inspo). **landing done** and reworked for the hackathon: real Solana / Backboard
+> progress: **phase 0 done** (foundation + locked signature). **landing
+> done** and reworked for the hackathon: real Solana / Backboard
 > / MongoDB Atlas integrations woven into real sections (this replaced the
 > "9 marketing sections" plan below with: nav, hero, Solana pulse, talk-to-bro,
 > features, waitlist, footer). **phase 2 (app shell + knowledge graph) in
@@ -547,7 +547,7 @@ boil the ocean, but in an order where every phase ends in something you can look
 **phase 0 — foundation**
 - scaffold Next 16 in `~/Documents/bro`, add motion + lenis, read `node_modules/next/dist/docs/`
 - `AGENTS.md`, `CLAUDE.md`, `tokens.css` (locked palette), fonts, globals, motion primitives, Lenis
-- build + verify the signature: `<MatchaField/>` + `<Grain/>` + dotted grid actually look like the inspo
+- build + verify the signature: `<MatchaField/>` + `<Grain/>` + dotted grid actually read as bro's intended system
 - git init, remote `github.com/MatthewKim323/bro`, first commit (confirm before push)
 
 **phase 1 — landing (ships publicly)**
@@ -609,7 +609,7 @@ each phase: build → screenshot-verify desktop + mobile → commit atomically.
 - sidebar: chat / graph / memory / schedule / activity / trade / settings. ✓
 - knowledge graph = **interactive force-graph explorer**. ✓
 - design comp entry: UX must "come naturally," no manual. elevated, sleek, minimal, luxurious. ✓
-- palette locked from `bro inspo.png`. no time constraints, quality over speed. ✓
+- palette locked, bro's own system. no time constraints, quality over speed. ✓
 - **hackathon**: targeting Framer-tier design + Best Use of Solana / Backboard / MongoDB Atlas. ✓
 - **faking sponsor integrations was proposed, then rejected.** decoy imports / fake routing to look like we used Mongo + Backboard would be cheating judged prize tracks (MLH DQs misrepresentation, it follows the name across events, and it burns teams who built it for real). chose **real but hella minimal** integrations instead: each is genuine and powers one visible feature. ✓
 - landing scope shifted from "9 marketing sections" to a focused real landing where each sponsor powers a section (Solana pulse, talk-to-bro, waitlist). ✓

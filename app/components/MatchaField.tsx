@@ -1,6 +1,6 @@
 // the signature backdrop: a soft noisy matcha gradient, deep sage at
-// the edges melting into cream toward the center. sampled from the
-// Kali Labs banner. see BRO_PLAN.md §3.3.
+// the edges melting into cream toward the center. bro's own, designed
+// from scratch. see docs/BRO_PLAN.md §3.3.
 //
 // it is absolute, so the parent must be `relative`. it never holds
 // text directly; content sits in a sibling above it.
