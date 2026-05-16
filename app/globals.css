@@ -61,25 +61,34 @@ body {
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  /* a real matcha wash: clearly green even through the center, where
-     content sits, deepening to sage at the edges + corners. */
+  /* the Kali Labs split: left half (deepest in the bottom-left corner)
+     is the grainy matcha, melting on a soft diagonal into clean cream
+     across the right half. content lives on the green left. */
   background:
     radial-gradient(
-      125% 120% at 50% 38%,
-      color-mix(in oklab, var(--color-matcha) 38%, var(--color-bg)) 0%,
-      color-mix(in oklab, var(--color-matcha) 56%, var(--color-bg)) 42%,
-      color-mix(in oklab, var(--color-sage-deep) 64%, var(--color-bg)) 78%,
-      color-mix(in oklab, var(--color-sage-deep) 90%, var(--color-bg)) 100%
+      115% 125% at 5% 102%,
+      color-mix(in oklab, var(--color-sage-deep) 74%, var(--color-bg)) 0%,
+      color-mix(in oklab, var(--color-sage-deep) 32%, var(--color-bg)) 38%,
+      transparent 62%
+    ),
+    linear-gradient(
+      104deg,
+      color-mix(in oklab, var(--color-matcha) 60%, var(--color-bg)) 0%,
+      color-mix(in oklab, var(--color-matcha) 40%, var(--color-bg)) 26%,
+      color-mix(in oklab, var(--color-matcha) 15%, var(--color-bg)) 46%,
+      var(--color-bg) 64%,
+      var(--color-bg) 100%
     ),
     var(--color-bg);
 }
 .bro-matcha-field--soft {
   background:
-    radial-gradient(
-      125% 125% at 50% 45%,
-      color-mix(in oklab, var(--color-matcha) 24%, var(--color-bg)) 0%,
-      color-mix(in oklab, var(--color-matcha) 42%, var(--color-bg)) 55%,
-      color-mix(in oklab, var(--color-sage-deep) 60%, var(--color-bg)) 100%
+    linear-gradient(
+      104deg,
+      color-mix(in oklab, var(--color-matcha) 34%, var(--color-bg)) 0%,
+      color-mix(in oklab, var(--color-matcha) 16%, var(--color-bg)) 40%,
+      var(--color-bg) 66%,
+      var(--color-bg) 100%
     ),
     var(--color-bg);
 }
