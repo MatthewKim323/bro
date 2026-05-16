@@ -1,35 +1,15 @@
 "use client";
 
-// smooth scroll for the landing. calm, ~1.2s glide. skipped entirely
-// when the user prefers reduced motion. see BRO_PLAN.md §3.6.
+// the landing used Lenis smooth scroll (see BRO_PLAN.md §3.6), but Lenis
+// drives scrolling through a per-frame JS loop. on this page that forced a
+// full repaint of the fixed full-viewport grain every frame and tanked
+// scroll FPS. native scroll hands scrolling to the compositor and stays
+// smooth, so Lenis is intentionally not initialized. the provider stays as
+// a pass-through so layout.tsx is unchanged. revisit if the grain becomes
+// cheap enough to repaint per frame.
 
-import { useEffect } from "react";
-import Lenis from "lenis";
+import type { ReactNode } from "react";
 
-export function LenisProvider({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    const reduce = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (reduce) return;
-
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    });
-
-    let raf = 0;
-    const loop = (time: number) => {
-      lenis.raf(time);
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-
-    return () => {
-      cancelAnimationFrame(raf);
-      lenis.destroy();
-    };
-  }, []);
-
+export function LenisProvider({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
