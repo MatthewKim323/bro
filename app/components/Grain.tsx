@@ -22,7 +22,7 @@ export function Grain() {
         <filter id="bro-grain-filter">
           <feTurbulence
             type="fractalNoise"
-            baseFrequency="0.55"
+            baseFrequency="0.62"
             numOctaves={2}
             stitchTiles="stitch"
           />

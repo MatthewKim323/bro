@@ -100,7 +100,7 @@ body {
   z-index: 40;
   pointer-events: none;
   mix-blend-mode: overlay;
-  opacity: 0.08;
+  opacity: 0.32;
 }
 
 /* ─────────────── signature: dotted grid ─────────────────── */
