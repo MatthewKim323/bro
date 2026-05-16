@@ -1,0 +1,36 @@
+/* ───────────────────────────────────────────────────────────────
+   bro design tokens
+   palette sampled directly from ~/Downloads/bro inspo.png
+   (the Kali Labs banner). LOCKED. do not eyeball-edit.
+   see BRO_PLAN.md §3 for the rationale.
+
+   Tailwind v4 emits every @theme var as a real :root custom
+   property, so components can use var(--color-ink) in raw CSS
+   AND get utilities like text-ink / bg-bg / border-line for free.
+   ─────────────────────────────────────────────────────────────── */
+
+@theme {
+  /* palette */
+  --color-bg: #f4f3ef; /* cream canvas, the page */
+  --color-surface: #e4e8dc; /* soft sage panel / card */
+  --color-matcha: #a8b89a; /* mid matcha: gradients, soft fills */
+  --color-sage-deep: #7e9270; /* deep sage: gradient edge, accents */
+  --color-accent: #5e7351; /* forest: primary CTA, interactive */
+  --color-ink: #23241f; /* primary text, warm near-black */
+  --color-soft: #7c8a72; /* secondary text, tracked labels */
+  --color-line: #e0e2d7; /* hairlines, borders */
+  --color-footer-bg: #ecebe4; /* slightly deeper cream, footer */
+
+  /* type */
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    sans-serif;
+
+  /* one radius everywhere. consistency reads as expensive. */
+  --radius-bro: 12px;
+
+  /* motion (mirrors lib/motion.ts so css-only transitions match) */
+  --ease-bro: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-bro: 700ms;
+  --stagger-bro: 60ms;
+}

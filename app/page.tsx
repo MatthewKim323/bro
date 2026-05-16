@@ -1,65 +1,92 @@
-import Image from "next/image";
+// TEMPORARY: signature verification specimen for phase 0. proves the
+// matcha field + grain + dotted grid + Fraunces/Inter system reads as
+// the inspo before we build the real landing (phase 1 replaces this).
+
+import { MatchaField } from "@/app/components/MatchaField";
+import { DottedGrid } from "@/app/components/DottedGrid";
+import { Reveal, Stagger } from "@/lib/motion";
+
+const SWATCHES = [
+  ["bg", "#f4f3ef"],
+  ["surface", "#e4e8dc"],
+  ["matcha", "#a8b89a"],
+  ["sage-deep", "#7e9270"],
+  ["accent", "#5e7351"],
+  ["ink", "#23241f"],
+  ["soft", "#7c8a72"],
+  ["line", "#e0e2d7"],
+] as const;
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main>
+      {/* ── hero specimen ───────────────────────────────────── */}
+      <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6">
+        <MatchaField />
+        <DottedGrid corner="tr" size={320} />
+
+        <div className="relative z-10 mx-auto max-w-3xl text-center">
+          <Reveal>
+            <span className="bro-label">always on. always yours.</span>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <h1 className="bro-display mt-6 text-[clamp(3rem,8vw,4.75rem)] text-ink">
+              your always-on AI agent.
+            </h1>
+          </Reveal>
+          <Reveal delay={0.16}>
+            <p className="bro-body mx-auto mt-6 max-w-xl text-lg">
+              lives in discord, telegram, or the web. learns your world.
+              helps you think, remember, and ship.
+            </p>
+          </Reveal>
+          <Reveal delay={0.24}>
+            <div className="mt-10 flex items-center justify-center gap-4">
+              <span className="rounded-bro bg-accent px-6 py-3 text-sm font-medium text-bg">
+                get bro
+              </span>
+              <span className="text-sm text-soft underline underline-offset-4">
+                see how it works
+              </span>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── palette + scroll/motion check ───────────────────── */}
+      <section className="relative mx-auto max-w-5xl px-6 py-32">
+        <Reveal>
+          <span className="bro-label">the locked palette</span>
+        </Reveal>
+        <Reveal delay={0.06}>
+          <h2 className="bro-display mt-4 text-4xl text-ink">
+            matcha, sampled not eyeballed.
+          </h2>
+        </Reveal>
+
+        <Stagger className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {SWATCHES.map(([name, hex]) => (
+            <Reveal key={name}>
+              <div className="overflow-hidden rounded-bro border border-line">
+                <div className="h-28" style={{ backgroundColor: hex }} />
+                <div className="bg-surface px-4 py-3">
+                  <div className="text-sm text-ink">{name}</div>
+                  <div className="font-mono text-xs text-soft">{hex}</div>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </Stagger>
+
+        <Reveal delay={0.1}>
+          <p className="bro-body mt-16 max-w-2xl text-lg">
+            grain sits over everything in soft-light, the field melts deep
+            sage at the edges into cream at the center, and the type pairs a
+            soft serif display with a quiet sans. if this reads luxurious and
+            calm, the foundation is right.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+        </Reveal>
+      </section>
+    </main>
   );
 }

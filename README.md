@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# bro
 
-## Getting Started
+the web bridge to **jabby**, an always-on personal AI agent. talk to it,
+watch its knowledge graph grow, let it paper-trade. elevated, minimal,
+matcha-and-cream.
 
-First, run the development server:
+> **status:** phase 0 (foundation) complete. design system + signature
+> texture are in. the app surface (chat, graph, trading) is not built yet.
+> see [`BRO_PLAN.md`](./BRO_PLAN.md) for the full spec and roadmap.
+
+## what this is
+
+- **landing** (`/`) is public and will be deployed. marketing only.
+- **the app** (`/app`, not built yet) is **localhost only** and is the real
+  bridge to jabby. the deployed build has no jabby connection, by construction.
+- trading is **paper only**: fake wallet, real observed prices, no real funds
+  or keys.
+
+read [`BRO_PLAN.md`](./BRO_PLAN.md) first. it is the source of truth: vision,
+architecture, the bridge contract, the locked design system, and the build
+roadmap. [`AGENTS.md`](./AGENTS.md) has the hard rules for working in here.
+
+## local dev
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
+bun run dev      # http://localhost:3000
+bun run build    # production build (must stay green)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Next.js 16 + React 19 + Tailwind v4. Bun is the package manager and runtime.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## design system (locked)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+palette is sampled directly from the Kali Labs banner, not eyeballed. cream
+canvas, soft sage, matcha, forest ink. Fraunces (display) + Inter (body).
+the signature is a soft matcha-field vignette + film grain + a single
+dotted-grid corner. depth comes from tone and grain, never shadow. see
+`app/tokens.css` and `BRO_PLAN.md` §3.
 
-## Learn More
+## made by
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Kali Labs.

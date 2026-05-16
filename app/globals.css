@@ -1,26 +1,140 @@
 @import "tailwindcss";
+@import "./tokens.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ───────────────────────── reset ───────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* ──────────────────── base typography ───────────────────── */
+body {
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern", "liga", "calt";
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-sage-deep) 35%, transparent);
+  color: var(--color-ink);
+}
+
+/* type helpers (kept tiny; most styling is Tailwind utilities) */
+.bro-display {
+  font-family: var(--font-display);
+  font-weight: 450;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.bro-label {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-soft);
+}
+.bro-body {
+  color: color-mix(in oklab, var(--color-ink) 86%, transparent);
+}
+
+/* ─────────────── signature: matcha field ────────────────── */
+.bro-matcha-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    /* perimeter sage vignette, fully inside the box (darkest at 100%) */
+    radial-gradient(
+      115% 115% at 50% 45%,
+      var(--color-bg) 0%,
+      var(--color-bg) 30%,
+      color-mix(in oklab, var(--color-matcha) 40%, var(--color-bg)) 62%,
+      color-mix(in oklab, var(--color-matcha) 64%, var(--color-bg)) 82%,
+      color-mix(in oklab, var(--color-sage-deep) 64%, var(--color-bg)) 100%
+    ),
+    /* warm luminous center, like the inspo */
+    radial-gradient(
+      55% 50% at 50% 42%,
+      color-mix(in oklab, #ffffff 45%, transparent) 0%,
+      transparent 70%
+    ),
+    var(--color-bg);
+}
+.bro-matcha-field--soft {
+  background:
+    radial-gradient(
+      120% 120% at 50% 48%,
+      var(--color-bg) 0%,
+      var(--color-bg) 50%,
+      color-mix(in oklab, var(--color-matcha) 30%, var(--color-bg)) 80%,
+      color-mix(in oklab, var(--color-sage-deep) 38%, var(--color-bg)) 100%
+    ),
+    var(--color-bg);
+}
+
+/* ─────────────── signature: film grain ──────────────────── */
+.bro-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  opacity: 0.2;
+}
+
+/* ─────────────── signature: dotted grid ─────────────────── */
+.bro-dots {
+  position: absolute;
+  pointer-events: none;
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--color-soft) 70%, transparent) 1px,
+    transparent 1.5px
+  );
+  background-size: 18px 18px;
+}
+
+/* ───────────────────────── Lenis ────────────────────────── */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+/* ────────────────── reduced motion ──────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
