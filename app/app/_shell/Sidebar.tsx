@@ -49,9 +49,9 @@ export function Sidebar({
       {/* wordmark */}
       <div className="flex h-14 shrink-0 items-center border-b border-line px-5">
         <Link
-          href="/app"
+          href="/"
           className="bro-display text-2xl leading-none text-ink"
-          aria-label="bro home"
+          aria-label="bro, back to the landing page"
         >
           {collapsed ? "b" : "bro"}
         </Link>
