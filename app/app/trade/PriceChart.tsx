@@ -24,6 +24,16 @@ function price(v: number) {
   return "$" + v.toExponential(2);
 }
 
+// compact $ for market-cap axis labels
+function compact(v: number) {
+  if (v >= 1e9) return "$" + (v / 1e9).toFixed(2) + "B";
+  if (v >= 1e6) return "$" + (v / 1e6).toFixed(2) + "M";
+  if (v >= 1e3) return "$" + (v / 1e3).toFixed(1) + "K";
+  return "$" + v.toFixed(0);
+}
+
+export type YMode = "price" | "mcap";
+
 // "nice" axis ticks across [min,max]
 function ticks(min: number, max: number, count: number): number[] {
   const span = max - min || max || 1;
@@ -49,10 +59,15 @@ export function PriceChart({
   candles,
   loading,
   tf = "1m",
+  yMode = "price",
+  supply = null,
 }: {
   candles: Candle[];
   loading?: boolean;
   tf?: string;
+  yMode?: YMode;
+  /** circulating supply (marketCap / price), so the axis can show mcap */
+  supply?: number | null;
 }) {
   const boxRef = useRef<HTMLDivElement>(null);
   const [box, setBox] = useState({ w: 0, h: 0 });
@@ -84,7 +99,14 @@ export function PriceChart({
           </span>
         </div>
       ) : (
-        <Plot candles={candles} tf={tf} w={box.w} h={box.h} />
+        <Plot
+          candles={candles}
+          tf={tf}
+          w={box.w}
+          h={box.h}
+          yMode={yMode}
+          supply={supply}
+        />
       )}
     </div>
   );
@@ -95,12 +117,21 @@ function Plot({
   tf,
   w,
   h,
+  yMode,
+  supply,
 }: {
   candles: Candle[];
   tf: string;
   w: number;
   h: number;
+  yMode: YMode;
+  supply: number | null;
 }) {
+  // market cap = price * supply (supply ~constant over the window, so
+  // candles are identical, only the axis labels rescale). falls back to
+  // price if supply is unknown.
+  const label = (v: number) =>
+    yMode === "mcap" && supply ? compact(v * supply) : price(v);
   const x0 = ML;
   const x1 = w - MR;
   const plotW = Math.max(1, x1 - x0);
@@ -168,7 +199,7 @@ function Plot({
               fill="var(--color-soft)"
               style={{ fontVariantNumeric: "tabular-nums" }}
             >
-              {price(v)}
+              {label(v)}
             </text>
           </g>
         );
@@ -289,7 +320,7 @@ function Plot({
           textAnchor="middle"
           style={{ fontVariantNumeric: "tabular-nums" }}
         >
-          {price(last.c)}
+          {label(last.c)}
         </text>
       </motion.g>
       <motion.circle

@@ -26,7 +26,7 @@ import {
 } from "@/lib/trading/engine";
 import { useLocalJSON } from "@/app/app/_shell/useLocalStore";
 import { useLedger } from "./useLedger";
-import { PriceChart } from "./PriceChart";
+import { PriceChart, type YMode } from "./PriceChart";
 
 type TF = "1m" | "1h" | "1d";
 const TF_LABEL: Record<TF, string> = { "1m": "live", "1h": "1h", "1d": "1d" };
@@ -63,6 +63,7 @@ export function TradeDesk() {
   const [movers, setMovers] = useState<Movers | null>(null);
   const [sel, setSel] = useState<string>("OPAL");
   const [tf, setTf] = useState<TF>("1m");
+  const [yMode, setYMode] = useState<YMode>("price");
   const [candles, setCandles] = useState<Candle[]>([]);
   const [loadedKey, setLoadedKey] = useState<string | null>(null);
   const [size, setSize] = useState("1");
@@ -155,6 +156,13 @@ export function TradeDesk() {
     tokens.find((t) => t.symbol === sel) ??
     results.items.find((t) => t.symbol === sel) ??
     null;
+  // circulating supply = marketCap / price, lets the Y axis show mcap.
+  // when it is unknown the toggle stays on price.
+  const supply =
+    selected?.marketCapUsd && selected?.priceUsd
+      ? selected.marketCapUsd / selected.priceUsd
+      : null;
+  const yModeEff: YMode = supply ? yMode : "price";
   const pool = selected?.pool ?? null;
   const chartKey = pool ? `${pool}:${tf}` : null;
   const chartLoading = chartKey != null && loadedKey !== chartKey;
@@ -327,34 +335,67 @@ export function TradeDesk() {
                 </span>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              {(["1m", "1h", "1d"] as TF[]).map((f) => (
-                <button
-                  key={f}
-                  type="button"
-                  onClick={() => setTf(f)}
-                  className={`flex items-center gap-1.5 pb-1 text-[12px] uppercase tracking-[0.16em] transition-colors ${
-                    tf === f
-                      ? "border-b border-accent text-ink"
-                      : "border-b border-transparent text-soft hover:text-ink"
-                  }`}
-                >
-                  {f === "1m" && tf === "1m" && (
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
-                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
-                    </span>
-                  )}
-                  {TF_LABEL[f]}
-                </button>
-              ))}
+            <div className="flex flex-col items-end gap-3">
+              <div className="flex items-center gap-4">
+                {(
+                  [
+                    ["price", "price"],
+                    ["mcap", "mkt cap"],
+                  ] as [YMode, string][]
+                ).map(([m, lbl]) => {
+                  const disabled = m === "mcap" && !supply;
+                  return (
+                    <button
+                      key={m}
+                      type="button"
+                      disabled={disabled}
+                      onClick={() => setYMode(m)}
+                      className={`pb-1 text-[12px] uppercase tracking-[0.16em] transition-colors disabled:opacity-30 ${
+                        yModeEff === m
+                          ? "border-b border-accent text-ink"
+                          : "border-b border-transparent text-soft hover:text-ink"
+                      }`}
+                    >
+                      {lbl}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex items-center gap-4">
+                {(["1m", "1h", "1d"] as TF[]).map((f) => (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => setTf(f)}
+                    className={`flex items-center gap-1.5 pb-1 text-[12px] uppercase tracking-[0.16em] transition-colors ${
+                      tf === f
+                        ? "border-b border-accent text-ink"
+                        : "border-b border-transparent text-soft hover:text-ink"
+                    }`}
+                  >
+                    {f === "1m" && tf === "1m" && (
+                      <span className="relative flex h-1.5 w-1.5">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
+                        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
+                      </span>
+                    )}
+                    {TF_LABEL[f]}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}
 
         {/* the candlestick chart, big */}
         <div className="mt-4 min-h-0 flex-1">
-          <PriceChart candles={displayCandles} loading={chartLoading} tf={tf} />
+          <PriceChart
+            candles={displayCandles}
+            loading={chartLoading}
+            tf={tf}
+            yMode={yModeEff}
+            supply={supply}
+          />
         </div>
 
         {/* buy / sell, one row */}
