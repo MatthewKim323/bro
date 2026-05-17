@@ -5,7 +5,7 @@
 
 import Link from "next/link";
 import { MatchaField } from "@/app/components/MatchaField";
-import { DottedGrid } from "@/app/components/DottedGrid";
+import { DotPattern } from "@/app/components/landing/DotPattern";
 import { Reveal } from "@/lib/motion";
 import { Nav } from "@/app/components/landing/Nav";
 import RotatingText from "@/app/components/landing/RotatingText";
@@ -52,7 +52,26 @@ export default function Home() {
             maskComposite: "intersect",
           }}
         />
-        <DottedGrid corner="tr" size={320} />
+        {/* dot pattern, scoped to the cream right half on the same
+            104deg axis as the matcha gradient and meadow (inverse of
+            the meadow mask) so it never bleeds onto the green or text.
+            sits behind the content, so the phone stays on top. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-0"
+          style={{
+            WebkitMaskImage:
+              "linear-gradient(104deg, transparent 40%, rgba(0,0,0,0.35) 58%, #000 78%, #000 100%)",
+            maskImage:
+              "linear-gradient(104deg, transparent 40%, rgba(0,0,0,0.35) 58%, #000 78%, #000 100%)",
+          }}
+        >
+          <DotPattern
+            width={24}
+            height={24}
+            className="text-sage-deep/30"
+          />
+        </div>
 
         <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-12 px-8 py-16 sm:px-16 lg:grid-cols-[6fr_5fr] lg:gap-10 lg:py-24">
           <div>

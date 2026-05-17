@@ -118,7 +118,7 @@ export function MemoryGraph() {
         N[i].m = SPECS[i].label ? 1 : 0;
         N[i].a = SPECS[i].label ? 1 : 0.4;
       }
-      E.o = 0.14;
+      E.o = 0.32;
       paint();
       return;
     }
@@ -201,7 +201,7 @@ export function MemoryGraph() {
         { m: 1, duration: 0.6, stagger: 0.04 },
         "bloom+=0.45",
       );
-      loop.to(E, { o: 0.13, duration: 1 }, "bloom+=0.3");
+      loop.to(E, { o: 0.34, duration: 1 }, "bloom+=0.3");
 
       loop.to({}, { duration: 2.8 }); // hold the memory map
 
@@ -241,7 +241,7 @@ export function MemoryGraph() {
         viewBox="0 0 100 78"
         preserveAspectRatio="xMidYMid meet"
       >
-        <g stroke="var(--color-sage-deep)" strokeWidth="0.22">
+        <g stroke="var(--color-sage-deep)" strokeWidth="0.36">
           {EDGES.map((_, e) => (
             <line
               key={e}

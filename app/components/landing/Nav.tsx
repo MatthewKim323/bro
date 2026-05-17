@@ -28,12 +28,23 @@ import { MobileMenu } from "./MobileMenu";
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const onScroll = () => {
       const past = window.scrollY > window.innerHeight * 0.85;
       setScrolled((p) => (p === past ? p : past));
+
+      // hide the whole bar once the dark "keep up" + footer zone takes
+      // over the screen, bring it back smoothly on the way up. measured
+      // off the element's visual rect so it stays correct under
+      // ScrollSmoother (which moves content by transform).
+      const zone = document.getElementById("waitlist");
+      const hide = zone
+        ? zone.getBoundingClientRect().top < window.innerHeight * 0.45
+        : false;
+      setHidden((p) => (p === hide ? p : hide));
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -75,7 +86,14 @@ export function Nav() {
   }, []);
 
   return (
-    <nav ref={navRef} className="fixed inset-x-0 top-0 z-[60]">
+    <nav
+      ref={navRef}
+      className={`fixed inset-x-0 z-[60] transition-[top,opacity] duration-500 ease-[var(--ease-bro)] ${
+        hidden
+          ? "pointer-events-none -top-44 opacity-0"
+          : "top-0 opacity-100"
+      }`}
+    >
       <div
         className={`relative mx-auto flex items-center justify-between transition-[max-width,padding] duration-500 ease-[var(--ease-bro)] ${
           scrolled

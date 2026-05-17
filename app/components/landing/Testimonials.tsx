@@ -15,9 +15,9 @@ type Quote = {
 const QUOTES: Quote[] = [
   {
     body:
-      "i stopped keeping a second brain across twelve apps. bro just knows. it texted me about my mom's birthday before i remembered it myself.",
+      "i'm a student and i genuinely could not plan my way out of a paper bag. bro runs my whole week now, classes, deadlines, gym. i actually show up on time. unheard of.",
     name: "Brandon Jimenez",
-    role: "solo operator",
+    role: "student at uc riverside",
     initials: "BJ",
     tone: "var(--color-accent)",
   },
@@ -33,7 +33,7 @@ const QUOTES: Quote[] = [
     body:
       "ngl i only got it to flex on the group chat. now bro runs my whole life and i just vibe. genuinely have no clue what i do all day anymore. unreal.",
     name: "Stephen Hung",
-    role: "full-time passenger",
+    role: "swe at walmart",
     initials: "SH",
     tone: "var(--color-matcha)",
   },
