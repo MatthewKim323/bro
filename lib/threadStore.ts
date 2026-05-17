@@ -22,15 +22,19 @@ function title(from: string): string {
   return t.length > 48 ? t.slice(0, 47) + "…" : t || "new chat";
 }
 
-/** append a user+bro turn to a thread (created on first turn). never throws. */
+/**
+ * append a user+bro turn to a thread (created on first turn). never
+ * throws. returns true only if it actually wrote to Atlas, so the
+ * trace can claim "saved to MongoDB" truthfully (false = not stored).
+ */
 export async function appendTurn(
   threadId: string,
   userText: string,
   broText: string,
-): Promise<void> {
+): Promise<boolean> {
   try {
     const db = await getDb();
-    if (!db) return;
+    if (!db) return false;
     const now = Date.now();
     await db.collection<ChatThread>(COLLECTION).updateOne(
       { _id: threadId },
@@ -48,8 +52,10 @@ export async function appendTurn(
       },
       { upsert: true },
     );
+    return true;
   } catch {
     /* history is best-effort; the live chat must never break on it */
+    return false;
   }
 }
 

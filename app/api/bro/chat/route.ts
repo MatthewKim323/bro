@@ -44,7 +44,10 @@ export async function POST(request: Request) {
     });
   }
 
+  const t0 = Date.now();
   const r = await askBroPersona(message, threadId);
+  const backboardMs = Date.now() - t0;
+
   if (!r.ok) {
     return Response.json({
       ok: false,
@@ -55,11 +58,34 @@ export async function POST(request: Request) {
   }
 
   // persist + grow the graph, best-effort, after the reply is secured.
+  // each returns whether it actually happened, so the trace is true.
+  let persisted = false;
+  let added = 0;
   if (r.threadId) {
-    await Promise.all([
+    const [p, g] = await Promise.all([
       appendTurn(r.threadId, message, r.reply),
       ingest(`${message}\n${r.reply}`),
     ]);
+    persisted = p;
+    added = g.entities;
+  }
+
+  // the "what bro did" trace: only steps that genuinely happened.
+  const steps: Array<{ label: string; ms?: number }> = [
+    {
+      label: threadId
+        ? "continued the thread, Backboard memory on"
+        : "opened a new Backboard thread",
+    },
+    { label: "asked the bro assistant on Backboard", ms: backboardMs },
+  ];
+  if (persisted) steps.push({ label: "saved the turn to MongoDB Atlas" });
+  if (added > 0) {
+    steps.push({
+      label: `grew the knowledge graph, +${added} ${
+        added === 1 ? "entity" : "entities"
+      }`,
+    });
   }
 
   return Response.json({
@@ -67,5 +93,6 @@ export async function POST(request: Request) {
     configured: true,
     reply: r.reply,
     threadId: r.threadId,
+    steps,
   });
 }

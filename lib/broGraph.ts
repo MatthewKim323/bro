@@ -44,13 +44,17 @@ function extract(text: string): Map<string, string> {
   return new Map([...out].slice(0, 8));
 }
 
-/** ingest a chunk of conversation text. never throws. */
-export async function ingest(text: string): Promise<void> {
+/**
+ * ingest a chunk of conversation text. never throws. returns how many
+ * entities it actually recorded this turn so the trace can say the
+ * truth (0 means nothing was written, the trace then claims nothing).
+ */
+export async function ingest(text: string): Promise<{ entities: number }> {
   try {
     const db = await getDb();
-    if (!db) return;
+    if (!db) return { entities: 0 };
     const found = extract(text);
-    if (found.size === 0) return;
+    if (found.size === 0) return { entities: 0 };
     const now = Date.now();
     const entries = [...found.entries()];
 
@@ -86,8 +90,10 @@ export async function ingest(text: string): Promise<void> {
         ),
       ),
     );
+    return { entities: entries.length };
   } catch {
     /* graph growth is best-effort; chat must never break on it */
+    return { entities: 0 };
   }
 }
 

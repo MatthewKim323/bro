@@ -13,7 +13,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Panel } from "@/app/components/Panel";
 import { Label } from "@/app/components/Label";
 
-type Turn = { role: "you" | "bro"; text: string };
+type Step = { label: string; ms?: number };
+type Turn = { role: "you" | "bro"; text: string; steps?: Step[] };
 type GNode = { id: string; label: string; count: number };
 type GEdge = { a: string; b: string; weight: number };
 
@@ -87,11 +88,16 @@ export default function BroChatPanel() {
       const data = (await res.json()) as {
         reply?: string;
         threadId?: string | null;
+        steps?: Step[];
       };
       if (data.threadId) threadId.current = data.threadId;
       setTurns((t) => [
         ...t,
-        { role: "bro", text: data.reply || "bro got cut off. try again." },
+        {
+          role: "bro",
+          text: data.reply || "bro got cut off. try again.",
+          steps: data.steps,
+        },
       ]);
       loadGraph();
     } catch {
@@ -124,14 +130,19 @@ export default function BroChatPanel() {
                 key={i}
                 className={`flex ${t.role === "you" ? "justify-end" : "justify-start"}`}
               >
-                <div
-                  className={`max-w-[80%] rounded-[16px] px-4 py-2.5 text-[14px] leading-relaxed ${
-                    t.role === "you"
-                      ? "bg-accent text-bg"
-                      : "bg-surface text-ink"
-                  }`}
-                >
-                  {t.text}
+                <div className="flex max-w-[80%] flex-col gap-1.5">
+                  <div
+                    className={`rounded-[16px] px-4 py-2.5 text-[14px] leading-relaxed ${
+                      t.role === "you"
+                        ? "bg-accent text-bg"
+                        : "bg-surface text-ink"
+                    }`}
+                  >
+                    {t.text}
+                  </div>
+                  {t.role === "bro" && t.steps && t.steps.length > 0 && (
+                    <Trace steps={t.steps} />
+                  )}
                 </div>
               </div>
             ))}
@@ -238,6 +249,44 @@ export default function BroChatPanel() {
           )}
         </div>
       </Panel>
+    </div>
+  );
+}
+
+// the "what bro did" trace: collapsed by default (BRO_PLAN §8.1 rule 2),
+// every line is something bro's own server genuinely did this turn.
+function Trace({ steps }: { steps: Step[] }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="text-[11px]">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-1.5 text-soft transition-colors hover:text-ink"
+      >
+        <span
+          className={`inline-block transition-transform ${open ? "rotate-90" : ""}`}
+        >
+          ▸
+        </span>
+        what bro did · {steps.length} step{steps.length === 1 ? "" : "s"}
+      </button>
+      {open && (
+        <ul className="mt-1.5 flex flex-col gap-1 border-l border-line pl-3">
+          {steps.map((s, i) => (
+            <li
+              key={i}
+              className="flex items-baseline justify-between gap-4 text-soft"
+            >
+              <span>{s.label}</span>
+              {typeof s.ms === "number" && (
+                <span className="shrink-0 font-mono text-[10px] text-soft/70">
+                  {s.ms} ms
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
