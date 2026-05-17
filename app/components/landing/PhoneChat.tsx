@@ -1,19 +1,30 @@
 "use client";
 
-// the screen inside the iPhone: a real iMessage-style thread with bro.
-// scripted opener for context (honest: it's bro introducing itself, not
-// a faked capability), then every turn is a real call to our Backboard
-// route. threadId is kept so it actually remembers. the on-screen
-// keyboard is tappable AND the pill is a real input (hardware typing
-// works too), same idea as Folk's hero, but ours actually talks back.
+// the screen inside the iPhone: a SCRIPTED demo thread, deliberately
+// NOT wired to any backend (Folk's hero phone is a scripted demo too).
+// it shows what bro is in bro's voice; the real bro (jabby + gbrain,
+// and Backboard) lives in the product, not this marketing eye-candy.
+// no network, no keys, works identically on the deployed build.
+// the on-screen keyboard is tappable and the pill is a real input.
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Turn = { role: "bro" | "you"; text: string };
 
 const OPENER: Turn[] = [
   { role: "bro", text: "yo. i'm bro." },
-  { role: "bro", text: "i live in your texts and i remember everything. ask me something." },
+  { role: "bro", text: "i live in your texts and i remember everything. say something." },
+];
+
+// a guided showcase: bro advances through these as you send, regardless
+// of the exact message (a demo, like Folk's). every line is true to
+// what bro actually does, just canned for the landing.
+const SCRIPT: string[] = [
+  "i already know your world. the people, the threads, what actually matters. i don't start from zero.",
+  "tell me to remember something and it sticks. across every chat, forever.",
+  "i run on my own too. check-ins, nudges, watching the stuff you care about. no prompt needed.",
+  "i'll even paper-trade solana memecoins when you say go. real prices, fake wallet, zero risk.",
+  "this is just a taste. the real me lives in your discord, telegram, and the app. tap get bro.",
 ];
 
 const ROWS = [
@@ -26,8 +37,15 @@ export function PhoneChat() {
   const [input, setInput] = useState("");
   const [turns, setTurns] = useState<Turn[]>(OPENER);
   const [busy, setBusy] = useState(false);
-  const threadId = useRef<string | null>(null);
+  const step = useRef(0);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timer.current) clearTimeout(timer.current);
+    };
+  }, []);
 
   function scrollDown() {
     requestAnimationFrame(() => {
@@ -36,28 +54,25 @@ export function PhoneChat() {
     });
   }
 
-  async function send() {
+  // scripted, local, no fetch. user message in, the next showcase line
+  // out after a believable typing beat.
+  function send() {
     const msg = input.trim();
     if (!msg || busy) return;
     setInput("");
     setTurns((t) => [...t, { role: "you", text: msg }]);
     setBusy(true);
     scrollDown();
-    try {
-      const res = await fetch("/api/bro/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg, threadId: threadId.current }),
-      });
-      const data = (await res.json()) as { reply?: string; threadId?: string | null };
-      if (data.threadId) threadId.current = data.threadId;
-      setTurns((t) => [...t, { role: "bro", text: data.reply || "bro got cut off. try again." }]);
-    } catch {
-      setTurns((t) => [...t, { role: "bro", text: "bro got cut off. try again." }]);
-    } finally {
-      setBusy(false);
-      scrollDown();
-    }
+    const reply = SCRIPT[Math.min(step.current, SCRIPT.length - 1)];
+    step.current += 1;
+    timer.current = setTimeout(
+      () => {
+        setTurns((t) => [...t, { role: "bro", text: reply }]);
+        setBusy(false);
+        scrollDown();
+      },
+      750 + Math.random() * 500,
+    );
   }
 
   const tap = (k: string) => setInput((v) => v + k);
