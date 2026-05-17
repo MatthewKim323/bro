@@ -38,6 +38,8 @@ export type Mover = {
   change24h: number | null;
   liquidityUsd: number | null;
   volume24h: number | null;
+  marketCapUsd: number | null;
+  fdvUsd: number | null;
 };
 
 export type Movers = {
@@ -56,6 +58,8 @@ type DexPair = {
   priceChange?: { h24?: number };
   volume?: { h24?: number };
   liquidity?: { usd?: number };
+  marketCap?: number;
+  fdv?: number;
 };
 
 function num(v: unknown): number | null {
@@ -89,6 +93,8 @@ function toMover(mint: string, p: DexPair | null): Mover {
     change24h: p?.priceChange?.h24 ?? null,
     liquidityUsd: p?.liquidity?.usd ?? null,
     volume24h: p?.volume?.h24 ?? null,
+    marketCapUsd: p?.marketCap ?? null,
+    fdvUsd: p?.fdv ?? null,
   };
 }
 

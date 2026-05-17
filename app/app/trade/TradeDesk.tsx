@@ -41,6 +41,13 @@ const fmtPrice = (p: number | null) => {
 const fmtSol = (n: number | null, d = 2) => (n == null ? "..." : n.toFixed(d));
 const fmtUsd = (n: number | null) =>
   n == null ? "..." : "$" + n.toLocaleString("en-US", { maximumFractionDigits: 0 });
+const fmtBig = (n: number | null) => {
+  if (n == null) return "...";
+  if (n >= 1e9) return "$" + (n / 1e9).toFixed(2) + "B";
+  if (n >= 1e6) return "$" + (n / 1e6).toFixed(2) + "M";
+  if (n >= 1e3) return "$" + (n / 1e3).toFixed(1) + "K";
+  return "$" + n.toFixed(0);
+};
 const fmtPct = (n: number | null) =>
   n == null ? "" : (n > 0 ? "+" : "") + n.toFixed(1) + "%";
 const fmtTokens = (n: number) =>
@@ -284,19 +291,41 @@ export function TradeDesk() {
         </div>
 
         {selected && (
-          <div className="mt-5 flex items-baseline justify-between">
-            <div className="flex items-baseline gap-4">
-              <span className="bro-display text-3xl text-ink">
-                {selected.symbol}
-              </span>
-              <span className="tabular-nums text-xl text-ink">
-                {fmtPrice(selected.priceUsd)}
-              </span>
-              <span
-                className={`tabular-nums text-sm ${upClass(selected.change24h)}`}
-              >
-                {fmtPct(selected.change24h)}
-              </span>
+          <div className="mt-5 flex items-start justify-between">
+            <div>
+              <div className="flex items-baseline gap-4">
+                <span className="bro-display text-3xl text-ink">
+                  {selected.symbol}
+                </span>
+                <span className="tabular-nums text-xl text-ink">
+                  {fmtPrice(selected.priceUsd)}
+                </span>
+                <span
+                  className={`tabular-nums text-sm ${upClass(selected.change24h)}`}
+                >
+                  {fmtPct(selected.change24h)}
+                </span>
+              </div>
+              <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-[12px] text-soft">
+                <span>
+                  mkt cap{" "}
+                  <span className="tabular-nums text-ink">
+                    {fmtBig(selected.marketCapUsd)}
+                  </span>
+                </span>
+                <span>
+                  liquidity{" "}
+                  <span className="tabular-nums text-ink">
+                    {fmtBig(selected.liquidityUsd)}
+                  </span>
+                </span>
+                <span>
+                  vol 24h{" "}
+                  <span className="tabular-nums text-ink">
+                    {fmtBig(selected.volume24h)}
+                  </span>
+                </span>
+              </div>
             </div>
             <div className="flex items-center gap-4">
               {(["1m", "1h", "1d"] as TF[]).map((f) => (
@@ -325,7 +354,7 @@ export function TradeDesk() {
 
         {/* the candlestick chart, big */}
         <div className="mt-4 min-h-0 flex-1">
-          <PriceChart candles={displayCandles} loading={chartLoading} />
+          <PriceChart candles={displayCandles} loading={chartLoading} tf={tf} />
         </div>
 
         {/* buy / sell, one row */}
