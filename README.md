@@ -1,6 +1,6 @@
 # bro
 
-the web bridge to **jabby**, an always-on personal AI agent. talk to it,
+an always-on personal AI agent. talk to it,
 watch its knowledge graph grow, let it paper-trade. elevated, minimal,
 matcha-and-cream.
 
