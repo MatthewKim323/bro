@@ -1,0 +1,15 @@
+/* "remembers everything" constellation. self-running GSAP loop driving
+   a pure SVG graph: a living node mesh that collapses and blooms into
+   labeled memory bubbles, forever. no scroll trigger, no WebGL.
+   reduced motion: a single static labeled state. */
+
+.mem-graph {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.mem-graph text {
+  user-select: none;
+}

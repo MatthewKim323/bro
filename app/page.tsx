@@ -13,7 +13,9 @@ import { TechStack } from "@/app/components/landing/TechStack";
 import { IPhone } from "@/app/components/landing/IPhone";
 import { PhoneChat } from "@/app/components/landing/PhoneChat";
 import { Features } from "@/app/components/landing/Features";
-import { Grainient } from "@/app/components/landing/Grainient";
+import { Demo } from "@/app/components/landing/Demo";
+import { Testimonials } from "@/app/components/landing/Testimonials";
+import { Pricing } from "@/app/components/landing/Pricing";
 import { Waitlist } from "@/app/components/landing/Waitlist";
 import { Footer } from "@/app/components/landing/Footer";
 import { DarkZone } from "@/app/components/landing/DarkZone";
@@ -127,43 +129,11 @@ export default function Home() {
               aria-hidden
               className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-56 bg-gradient-to-b from-bg to-transparent"
             />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 opacity-30"
-              style={{
-                WebkitMaskImage:
-                  "linear-gradient(to bottom, transparent 0, #000 180px, #000 calc(100% - 180px), transparent 100%)",
-                maskImage:
-                  "linear-gradient(to bottom, transparent 0, #000 180px, #000 calc(100% - 180px), transparent 100%)",
-              }}
-            >
-              <Grainient
-                color1="#a8b89a"
-                color2="#7e9270"
-                color3="#5e7351"
-                timeSpeed={1.3}
-                colorBalance={0.0}
-                warpStrength={3.1}
-                warpFrequency={5.0}
-                warpSpeed={2.0}
-                warpAmplitude={50.0}
-                blendAngle={0.0}
-                blendSoftness={0.05}
-                rotationAmount={500.0}
-                noiseScale={2.0}
-                grainAmount={0.1}
-                grainScale={2.0}
-                grainAnimated={false}
-                contrast={1.25}
-                gamma={1.45}
-                saturation={1.0}
-                centerX={0.0}
-                centerY={0.0}
-                zoom={0.9}
-              />
-            </div>
             <Features />
           </div>
+          <Demo />
+          <Testimonials />
+          <Pricing />
           <DarkZone>
             <Waitlist />
             <Footer />

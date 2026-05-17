@@ -61,10 +61,10 @@ export function Waitlist() {
     <section id="waitlist" className="relative mx-auto w-full max-w-6xl scroll-mt-24 px-8 pb-28 pt-44 sm:px-16">
       <div className="relative z-10 max-w-xl">
         <Reveal>
-          <h2 className="bro-display text-4xl text-bg sm:text-5xl">
+          <h2 className="bro-display text-4xl text-balance text-bg sm:text-6xl">
             want to keep up with bro?
           </h2>
-          <p className="bro-body mt-5 text-lg text-bg/85">
+          <p className="bro-body mt-5 text-lg text-pretty text-bg/85">
             {count != null
               ? `${count.toLocaleString()} already keeping up.`
               : "drop your email, we'll keep you in the loop."}

@@ -6,6 +6,7 @@
 import { ScrollReveal } from "./ScrollReveal";
 import { PaperTradeChat } from "./PaperTradeChat";
 import { MessagingOrbit } from "./MessagingOrbit";
+import { MemoryGraph } from "./MemoryGraph";
 
 const FEATURES = [
   {
@@ -37,7 +38,7 @@ export function Features() {
         <section
           key={f.k}
           id={i === 0 ? "features" : undefined}
-          className={`w-full scroll-mt-24 bg-bg/60 ${
+          className={`w-full scroll-mt-24 bg-bg ${
             f.k === "solana" ? "mb-28 sm:mb-44" : ""
           }`}
         >
@@ -49,22 +50,26 @@ export function Features() {
                     <PaperTradeChat />
                   </div>
                   <div className="order-1 lg:order-2">
-                    <h3 className="bro-display text-4xl leading-[1.04] text-ink sm:text-6xl">
+                    <h3 className="bro-display text-4xl leading-[1.04] text-ink text-balance sm:text-6xl">
                       {f.t}
                     </h3>
-                    <p className="bro-body mt-6 max-w-xl text-base leading-relaxed sm:text-lg">
+                    <p className="bro-body mt-6 max-w-xl text-base leading-relaxed text-pretty sm:text-lg">
                       {f.d}
                     </p>
                   </div>
                 </div>
               ) : f.k === "one brain" ? (
                 <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-                  <div className="hidden lg:block" />
-                  <div>
-                    <h3 className="bro-display text-4xl leading-[1.04] text-ink sm:text-6xl">
+                  <div className="order-2 flex justify-center lg:order-1">
+                    <div className="w-full max-w-md">
+                      <MemoryGraph />
+                    </div>
+                  </div>
+                  <div className="order-1 lg:order-2">
+                    <h3 className="bro-display text-4xl leading-[1.04] text-ink text-balance sm:text-6xl">
                       {f.t}
                     </h3>
-                    <p className="bro-body mt-6 max-w-xl text-base leading-relaxed sm:text-lg">
+                    <p className="bro-body mt-6 max-w-xl text-base leading-relaxed text-pretty sm:text-lg">
                       {f.d}
                     </p>
                   </div>
@@ -72,10 +77,10 @@ export function Features() {
               ) : f.k === "always on" ? (
                 <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
                   <div>
-                    <h3 className="bro-display max-w-xl text-4xl leading-[1.04] text-ink sm:text-6xl">
+                    <h3 className="bro-display max-w-xl text-4xl leading-[1.04] text-ink text-balance sm:text-6xl">
                       {f.t}
                     </h3>
-                    <p className="bro-body mt-6 max-w-xl text-base leading-relaxed sm:text-lg">
+                    <p className="bro-body mt-6 max-w-xl text-base leading-relaxed text-pretty sm:text-lg">
                       {f.d}
                     </p>
                   </div>
@@ -87,10 +92,10 @@ export function Features() {
                 </div>
               ) : (
                 <>
-                  <h3 className="bro-display max-w-4xl text-4xl leading-[1.04] text-ink sm:text-6xl">
+                  <h3 className="bro-display max-w-4xl text-4xl leading-[1.04] text-ink text-balance sm:text-6xl">
                     {f.t}
                   </h3>
-                  <p className="bro-body mt-6 max-w-xl text-base leading-relaxed sm:text-lg">
+                  <p className="bro-body mt-6 max-w-xl text-base leading-relaxed text-pretty sm:text-lg">
                     {f.d}
                   </p>
                 </>

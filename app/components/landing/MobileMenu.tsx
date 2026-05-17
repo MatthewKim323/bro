@@ -15,6 +15,7 @@ import { BRO_EASE } from "@/lib/motion";
 const TABS = [
   { label: "home", href: "#top" },
   { label: "what it does", href: "#features" },
+  { label: "pricing", href: "#pricing" },
   { label: "keep up", href: "#waitlist" },
 ];
 
