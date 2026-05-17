@@ -6,7 +6,6 @@ matcha-and-cream.
 
 > **status:** phase 0 (foundation) complete. design system + signature
 > texture are in. the app surface (chat, graph, trading) is not built yet.
-> see [`BRO_PLAN.md`](./docs/BRO_PLAN.md) for the full spec and roadmap.
 
 ## what this is
 
