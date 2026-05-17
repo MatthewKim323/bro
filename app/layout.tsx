@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description:
     "the bridge to jabby. talk to it, watch its mind grow, let it trade.",
   applicationName: "bro",
-  authors: [{ name: "Kali Labs" }],
+  authors: [{ name: "Matthew Kim" }, { name: "Silas Wu" }],
   metadataBase: new URL("https://bro.kalilabs.ai"),
   openGraph: {
     title: "bro, your always-on AI agent",

@@ -34,7 +34,7 @@ export function Footer() {
           </div>
         </div>
         <div className="flex items-center justify-between border-t border-bg/15 pt-7 text-xs text-bg/60">
-          <span>made by Kali Labs</span>
+          <span>made by Matthew Kim and Silas Wu</span>
           <span>&copy; 2026</span>
         </div>
       </div>
