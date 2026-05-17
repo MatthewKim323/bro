@@ -1,10 +1,10 @@
 // what bro actually is. every line is true to jabby + the plan. no
-// overpromising. each of the four is its own full-screen section: a
-// tracked label, one big Fraunces statement, a quiet line. no scroll
-// library, calm reveal only.
+// overpromising. each of the four is its own full section: a tracked
+// label, one big Fraunces statement, a quiet line, revealed on a calm
+// scrubbed GSAP ScrollTrigger as it scrolls in.
 
 import { Label } from "@/app/components/Label";
-import { Reveal } from "@/lib/motion";
+import { ScrollReveal } from "./ScrollReveal";
 
 const FEATURES = [
   {
@@ -41,7 +41,7 @@ export function Features() {
           }`}
         >
           <div className="mx-auto flex min-h-[80vh] max-w-6xl flex-col justify-center px-8 py-28 sm:px-16">
-            <Reveal>
+            <ScrollReveal>
               <Label>{f.k}</Label>
               <h3 className="bro-display mt-6 max-w-4xl text-6xl leading-[1.02] text-ink sm:text-8xl">
                 {f.t}
@@ -49,7 +49,7 @@ export function Features() {
               <p className="bro-body mt-8 max-w-xl text-xl leading-relaxed sm:text-2xl">
                 {f.d}
               </p>
-            </Reveal>
+            </ScrollReveal>
           </div>
         </section>
       ))}

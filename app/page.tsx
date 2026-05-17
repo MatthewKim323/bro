@@ -8,6 +8,7 @@ import { MatchaField } from "@/app/components/MatchaField";
 import { DottedGrid } from "@/app/components/DottedGrid";
 import { Reveal } from "@/lib/motion";
 import { Nav } from "@/app/components/landing/Nav";
+import { TechStack } from "@/app/components/landing/TechStack";
 import { IPhone } from "@/app/components/landing/IPhone";
 import { PhoneChat } from "@/app/components/landing/PhoneChat";
 import { Features } from "@/app/components/landing/Features";
@@ -38,17 +39,24 @@ export default function Home() {
               </p>
             </Reveal>
             <Reveal delay={0.2}>
-              <div className="mt-10 flex items-center gap-5">
-                <Link
-                  href="/app"
+              <div className="mt-10 flex flex-wrap items-center gap-4">
+                <a
+                  href="/bro.pkg"
+                  download
                   className="rounded-bro bg-accent px-7 py-3.5 text-sm font-medium text-bg transition-opacity duration-200 ease-[var(--ease-bro)] hover:opacity-85"
                 >
                   get bro
+                </a>
+                <Link
+                  href="/app"
+                  className="rounded-bro border border-line px-7 py-3.5 text-sm font-medium text-ink transition-colors duration-200 ease-[var(--ease-bro)] hover:bg-surface"
+                >
+                  try bro in your browser
                 </Link>
-                <span className="text-sm text-soft">
-                  or just text it, right here
-                </span>
               </div>
+            </Reveal>
+            <Reveal delay={0.3}>
+              <TechStack />
             </Reveal>
           </div>
 

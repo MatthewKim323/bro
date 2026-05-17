@@ -6,7 +6,6 @@
 // esc closes, body scroll locks while open, any tab closes it.
 
 import { useEffect } from "react";
-import Link from "next/link";
 import { motion, useCycle, type Variants } from "motion/react";
 import { MenuToggle } from "./MenuToggle";
 import { BRO_EASE } from "@/lib/motion";
@@ -98,13 +97,14 @@ export function MobileMenu() {
           </ul>
 
           <motion.div variants={item} className="mt-12">
-            <Link
-              href="/app"
+            <a
+              href="/bro.pkg"
+              download
               onClick={() => toggleOpen()}
               className="inline-flex rounded-bro bg-accent px-7 py-3.5 text-sm font-medium text-bg transition-opacity duration-200 ease-[var(--ease-bro)] hover:opacity-85"
             >
               get bro
-            </Link>
+            </a>
           </motion.div>
         </motion.nav>
       </motion.div>
