@@ -42,11 +42,18 @@ export function Sidebar({
 
   return (
     <nav
-      className={`flex h-full shrink-0 flex-col border-r border-line bg-bg transition-[width] duration-300 ease-[var(--ease-bro)] ${
+      className={`relative flex h-full shrink-0 flex-col overflow-hidden border-r border-line transition-[width] duration-300 ease-[var(--ease-bro)] ${
         collapsed ? "w-[68px]" : "w-[264px]"
       }`}
       aria-label="bro navigation"
     >
+      {/* the rail rests on a soft sage field, deepest at the foot where
+          identity sits, melting to clean cream by the nav + threads so
+          text always lands on calm ground (field never behind reading
+          copy). the shell's grain prints it so it reads, not digital. */}
+      <div aria-hidden className="bro-rail-field" />
+
+      <div className="relative z-10 flex h-full min-h-0 flex-col">
       {/* wordmark */}
       <div className="flex h-14 shrink-0 items-center border-b border-line px-5">
         <Link
@@ -73,12 +80,20 @@ export function Sidebar({
                 <Link
                   href={p.href}
                   title={collapsed ? p.label : undefined}
-                  className={`group flex items-center gap-3 rounded-bro px-3 py-2 text-sm transition-colors ${
+                  className={`group relative flex items-center gap-3 rounded-bro px-3 py-2 text-sm transition-colors duration-200 ease-[var(--ease-bro)] ${
                     isActive
                       ? "bg-surface text-ink"
                       : "text-soft hover:text-ink"
                   } ${collapsed ? "justify-center" : ""}`}
                 >
+                  {/* the one loud thing on the rail: a hairline accent
+                      tick marks the active panel. nothing else shouts. */}
+                  {isActive && (
+                    <span
+                      aria-hidden
+                      className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-accent"
+                    />
+                  )}
                   <span
                     className={
                       isActive ? "text-accent" : "text-soft group-hover:text-ink"
@@ -184,6 +199,7 @@ export function Sidebar({
             />
           </svg>
         </button>
+      </div>
       </div>
     </nav>
   );

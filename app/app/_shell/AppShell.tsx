@@ -8,6 +8,7 @@
 
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { Grain } from "@/app/components/Grain";
 import { Sidebar } from "./Sidebar";
 import { StatusBar } from "./StatusBar";
 import { CommandPalette } from "./CommandPalette";
@@ -83,6 +84,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         onClose={() => setPaletteOpen(false)}
         onNewThread={newThread}
       />
+
+      {/* the signature texture, the connective tissue of the design
+          system. it sits at z-40 (under the palette's z-50, over the
+          rail and panels) so the whole shell reads printed, not
+          digital. intensity is tuned only in .bro-grain { opacity }. */}
+      <Grain />
     </div>
   );
 }

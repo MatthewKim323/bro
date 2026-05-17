@@ -97,6 +97,28 @@ body {
     var(--color-bg);
 }
 
+/* the app rail: the same signature, tuned for a tall narrow column.
+   one whisper-soft sage pool at the foot (where identity sits),
+   melting fully to clean cream across the top ~62% so the panel
+   nav and thread list always sit on calm, readable ground. derived
+   only from the locked tokens (no new color, no shadow, one radius). */
+.bro-rail-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      150% 62% at 30% 100%,
+      color-mix(in oklab, var(--color-sage-deep) 42%, var(--color-bg)) 0%,
+      color-mix(in oklab, var(--color-sage-deep) 22%, var(--color-bg)) 32%,
+      color-mix(in oklab, var(--color-sage-deep) 8%, var(--color-bg)) 55%,
+      transparent 78%
+    ),
+    var(--color-bg);
+}
+
 /* ─────────────── signature: film grain ──────────────────── */
 .bro-grain {
   position: fixed;
