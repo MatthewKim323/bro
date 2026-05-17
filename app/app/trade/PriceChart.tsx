@@ -1,19 +1,17 @@
 "use client";
 
-// the price chart. a custom in-palette SVG area curve, not a charting
-// library: keeps it on-brand (tone over ornament, no gridlines, no
-// axes) and adds zero dependencies. real OHLCV closes from
-// GeckoTerminal, oldest -> newest. up vs down tints with the palette
-// (accent vs soft), never red/green. one faint reference line at the
-// open and tiny tracked low/high markers are the only "data" furniture,
-// the expensive-restraint detail. see BRO_PLAN.md §3 / §8.6.
+// candlestick chart. real OHLC from GeckoTerminal, drawn as wicks +
+// bodies like a pump.fun-style desk, but in the locked palette: up =
+// accent (the system's forest green), down = soft (muted sage). no
+// red, no neon, no gridlines, no axes, no chart library, zero deps.
+// fills its container. see BRO_PLAN.md §3 / §8.6.
 
 import { useId } from "react";
 import type { Candle } from "@/lib/trading/ohlcv";
 
-const W = 760;
-const H = 300;
-const PAD = 10;
+const W = 1000;
+const H = 460;
+const PAD = 12;
 
 const fmt = (v: number) =>
   v >= 1 ? "$" + v.toFixed(2) : "$" + v.toPrecision(3);
@@ -29,7 +27,7 @@ export function PriceChart({
 
   if (loading || candles.length < 2) {
     return (
-      <div className="flex h-[300px] items-center justify-center rounded-bro border border-line">
+      <div className="flex h-full min-h-[260px] items-center justify-center rounded-bro border border-line">
         <span className="bro-label text-soft">
           {loading ? "drawing the chart..." : "no chart data yet"}
         </span>
@@ -37,71 +35,64 @@ export function PriceChart({
     );
   }
 
-  const closes = candles.map((c) => c.c);
-  const min = Math.min(...closes);
-  const max = Math.max(...closes);
-  const span = max - min || max || 1;
-  const open = closes[0];
-  const up = closes[closes.length - 1] >= open;
-  const stroke = up ? "var(--color-accent)" : "var(--color-soft)";
+  const hi = Math.max(...candles.map((c) => c.h));
+  const lo = Math.min(...candles.map((c) => c.l));
+  const span = hi - lo || hi || 1;
+  const y = (v: number) => PAD + (1 - (v - lo) / span) * (H - PAD * 2);
 
-  const x = (i: number) => PAD + (i / (closes.length - 1)) * (W - PAD * 2);
-  const y = (v: number) => PAD + (1 - (v - min) / span) * (H - PAD * 2);
-
-  const line = closes
-    .map((v, i) => `${i === 0 ? "M" : "L"}${x(i).toFixed(2)},${y(v).toFixed(2)}`)
-    .join(" ");
-  const area = `${line} L${x(closes.length - 1).toFixed(2)},${H} L${x(0).toFixed(2)},${H} Z`;
-  const baseY = y(open).toFixed(2);
+  const n = candles.length;
+  const slot = (W - PAD * 2) / n;
+  const bodyW = Math.max(1, Math.min(slot * 0.64, 13));
 
   return (
-    <div className="relative rounded-bro border border-line p-1">
+    <div className="relative h-full min-h-[260px] rounded-bro border border-line">
       <svg
         viewBox={`0 0 ${W} ${H}`}
         preserveAspectRatio="none"
-        className="h-[300px] w-full"
+        className="h-full w-full"
         role="img"
-        aria-label="price history"
+        aria-label="candlestick price history"
+        aria-describedby={`${gid}-d`}
       >
-        <defs>
-          <linearGradient id={`${gid}-fill`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={stroke} stopOpacity="0.16" />
-            <stop offset="100%" stopColor={stroke} stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        {/* faint reference line at the window's open price */}
-        <line
-          x1={PAD}
-          y1={baseY}
-          x2={W - PAD}
-          y2={baseY}
-          stroke="var(--color-line)"
-          strokeWidth="1"
-          vectorEffect="non-scaling-stroke"
-        />
-        <path d={area} fill={`url(#${gid}-fill)`} />
-        <path
-          d={line}
-          fill="none"
-          stroke={stroke}
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          vectorEffect="non-scaling-stroke"
-        />
-        <circle
-          cx={x(closes.length - 1)}
-          cy={y(closes[closes.length - 1])}
-          r="3"
-          fill={stroke}
-        />
+        <desc id={`${gid}-d`}>
+          {n} candles, {fmt(lo)} to {fmt(hi)}
+        </desc>
+        {candles.map((c, i) => {
+          const cx = PAD + slot * (i + 0.5);
+          const up = c.c >= c.o;
+          const color = up ? "var(--color-accent)" : "var(--color-soft)";
+          const yo = y(c.o);
+          const yc = y(c.c);
+          const top = Math.min(yo, yc);
+          const h = Math.max(Math.abs(yc - yo), 1);
+          return (
+            <g key={c.t}>
+              <line
+                x1={cx}
+                y1={y(c.h)}
+                x2={cx}
+                y2={y(c.l)}
+                stroke={color}
+                strokeWidth="1"
+                vectorEffect="non-scaling-stroke"
+              />
+              <rect
+                x={cx - bodyW / 2}
+                y={top}
+                width={bodyW}
+                height={h}
+                fill={color}
+                rx="0.5"
+              />
+            </g>
+          );
+        })}
       </svg>
-      {/* tracked low/high, the only data furniture */}
       <span className="bro-label pointer-events-none absolute right-3 top-3 text-soft">
-        {fmt(max)}
+        {fmt(hi)}
       </span>
       <span className="bro-label pointer-events-none absolute bottom-3 right-3 text-soft">
-        {fmt(min)}
+        {fmt(lo)}
       </span>
     </div>
   );

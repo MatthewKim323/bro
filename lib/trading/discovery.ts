@@ -1,26 +1,26 @@
-// the movers bro watches + paper-trades. SERVER ONLY.
+// the movers bro watches + paper-trades, plus open search over any
+// Solana memecoin. SERVER ONLY.
 //
-// one batched Dexscreener call (public, no key, no wallet) resolves the
-// watchlist to live price / 24h / liquidity / volume AND the best pool
-// address (which the chart needs for GeckoTerminal OHLCV). prices are
-// REAL; the wallet and fills are paper (lib/trading/engine). zero keys,
-// zero RPC signing, zero real funds. see BRO_PLAN.md §10.
+// Dexscreener public API (no key, no wallet). prices are REAL; the
+// wallet and fills are paper (lib/trading/engine). zero keys, zero RPC
+// signing, zero real funds. see BRO_PLAN.md §10.
 //
-// the watchlist is config: tradeable memecoins by mint. add a coin by
-// dropping its mint here (Dexscreener search resolves symbol -> mint).
-// SOL is tracked separately, it is the sim wallet's base currency, not
-// a thing you trade against itself.
+// the watchlist is just the default quick-pick. `extra` mints (whatever
+// you searched into or currently hold) are resolved alongside it so a
+// non-watchlist coin still stays live-priced for its chart, position
+// value and PnL. search resolves any coin by symbol or address.
 
 // per-token endpoint. the comma-batched /latest/dex/tokens call silently
-// drops very-new pump.fun mints (e.g. OPAL); this one is reliable per
-// mint, so we fan out in parallel instead of batching.
-const DEX = "https://api.dexscreener.com/token-pairs/v1/solana/";
+// drops very-new pump.fun mints; this one is reliable per mint, so we
+// fan out in parallel.
+const DEX_TOKEN = "https://api.dexscreener.com/token-pairs/v1/solana/";
+const DEX_SEARCH = "https://api.dexscreener.com/latest/dex/search?q=";
 
 export const SOL_MINT = "So11111111111111111111111111111111111111112";
 
 export type WatchDef = { symbol: string; name: string; mint: string };
 
-// tradeable memecoins. real Solana mints. extend freely.
+// default quick-pick. real Solana mints. extend freely.
 export const WATCHLIST: WatchDef[] = [
   { symbol: "OPAL", name: "Opal", mint: "2PzS5SYYWjUFvzXNFaMmRkpjkxGX6R5v8DnKYtdcpump" },
   { symbol: "BONK", name: "Bonk", mint: "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263" },
@@ -32,7 +32,6 @@ export type Mover = {
   symbol: string;
   name: string;
   mint: string;
-  /** best (highest-liquidity) solana pool, used for the OHLCV chart */
   pool: string | null;
   dex: string | null;
   priceUsd: number | null;
@@ -43,7 +42,6 @@ export type Mover = {
 
 export type Movers = {
   ok: boolean;
-  /** live SOL/USD, so the paper wallet can show a real dollar value */
   solUsd: number | null;
   tokens: Mover[];
   fetchedAt: number;
@@ -53,17 +51,17 @@ type DexPair = {
   chainId?: string;
   dexId?: string;
   pairAddress?: string;
-  baseToken?: { address?: string };
+  baseToken?: { address?: string; symbol?: string; name?: string };
   priceUsd?: string;
   priceChange?: { h24?: number };
   volume?: { h24?: number };
   liquidity?: { usd?: number };
 };
 
-// calm cadence: a 25s server cache so the desk polling never hammers
-// Dexscreener (and stays well under any informal rate limit).
-let cache: { at: number; data: Movers } | null = null;
-const TTL_MS = 25_000;
+function num(v: unknown): number | null {
+  const n = typeof v === "string" ? Number(v) : (v as number);
+  return Number.isFinite(n) ? n : null;
+}
 
 function bestPair(pairs: DexPair[], mint: string): DexPair | null {
   const mine = pairs.filter(
@@ -75,13 +73,32 @@ function bestPair(pairs: DexPair[], mint: string): DexPair | null {
   return mine[0] ?? null;
 }
 
-// one mint -> its pairs. the token-pairs/v1 endpoint returns a bare
-// array. never throws; a miss is just an empty list.
+const KNOWN = new Map(WATCHLIST.map((w) => [w.mint, w]));
+
+function toMover(mint: string, p: DexPair | null): Mover {
+  const w = KNOWN.get(mint);
+  const symbol =
+    w?.symbol ?? p?.baseToken?.symbol ?? `${mint.slice(0, 4)}…`;
+  return {
+    symbol,
+    name: w?.name ?? p?.baseToken?.name ?? symbol,
+    mint,
+    pool: p?.pairAddress ?? null,
+    dex: p?.dexId ?? null,
+    priceUsd: num(p?.priceUsd),
+    change24h: p?.priceChange?.h24 ?? null,
+    liquidityUsd: p?.liquidity?.usd ?? null,
+    volume24h: p?.volume?.h24 ?? null,
+  };
+}
+
+// one mint -> its pairs. token-pairs/v1 returns a bare array. never
+// throws; a miss is just an empty list.
 async function fetchPairs(mint: string): Promise<DexPair[]> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
-    const res = await fetch(DEX + mint, {
+    const res = await fetch(DEX_TOKEN + mint, {
       signal: controller.signal,
       cache: "no-store",
       headers: { accept: "application/json" },
@@ -95,53 +112,34 @@ async function fetchPairs(mint: string): Promise<DexPair[]> {
   }
 }
 
-function num(v: unknown): number | null {
-  const n = typeof v === "string" ? Number(v) : (v as number);
-  return Number.isFinite(n) ? n : null;
-}
+// calm cadence: a short server cache keyed by the exact mint set so the
+// desk polling never hammers Dexscreener.
+const moversCache = new Map<string, { at: number; data: Movers }>();
+const MOVERS_TTL = 20_000;
 
-export async function getMovers(): Promise<Movers> {
-  if (cache && Date.now() - cache.at < TTL_MS) return cache.data;
+export async function getMovers(extra: string[] = []): Promise<Movers> {
+  const want = Array.from(
+    new Set([...WATCHLIST.map((w) => w.mint), ...extra.filter(Boolean)]),
+  );
+  const key = want.slice().sort().join(",");
+  const hit = moversCache.get(key);
+  if (hit && Date.now() - hit.at < MOVERS_TTL) return hit.data;
 
-  const mints = [SOL_MINT, ...WATCHLIST.map((w) => w.mint)];
   const fallback: Movers = {
     ok: false,
     solUsd: null,
-    tokens: WATCHLIST.map((w) => ({
-      symbol: w.symbol,
-      name: w.name,
-      mint: w.mint,
-      pool: null,
-      dex: null,
-      priceUsd: null,
-      change24h: null,
-      liquidityUsd: null,
-      volume24h: null,
-    })),
+    tokens: want.map((m) => toMover(m, null)),
     fetchedAt: Date.now(),
   };
 
   try {
-    // fan out per mint in parallel; reliable for new pump.fun tokens
+    const mints = [SOL_MINT, ...want];
     const results = await Promise.all(mints.map((m) => fetchPairs(m)));
     const byMint = new Map<string, DexPair[]>();
     mints.forEach((m, i) => byMint.set(m, results[i]));
 
     const solUsd = num(bestPair(byMint.get(SOL_MINT) ?? [], SOL_MINT)?.priceUsd);
-    const tokens: Mover[] = WATCHLIST.map((w) => {
-      const p = bestPair(byMint.get(w.mint) ?? [], w.mint);
-      return {
-        symbol: w.symbol,
-        name: w.name,
-        mint: w.mint,
-        pool: p?.pairAddress ?? null,
-        dex: p?.dexId ?? null,
-        priceUsd: num(p?.priceUsd),
-        change24h: p?.priceChange?.h24 ?? null,
-        liquidityUsd: p?.liquidity?.usd ?? null,
-        volume24h: p?.volume?.h24 ?? null,
-      };
-    });
+    const tokens = want.map((m) => toMover(m, bestPair(byMint.get(m) ?? [], m)));
 
     const data: Movers = {
       ok: tokens.some((t) => t.priceUsd != null),
@@ -149,9 +147,54 @@ export async function getMovers(): Promise<Movers> {
       tokens,
       fetchedAt: Date.now(),
     };
-    cache = { at: Date.now(), data };
+    moversCache.set(key, { at: Date.now(), data });
     return data;
   } catch {
     return fallback;
+  }
+}
+
+// open search: any Solana memecoin by symbol or address. dedup by mint,
+// best pool per mint, ranked by liquidity. cached briefly per query.
+const searchCache = new Map<string, { at: number; data: Mover[] }>();
+const SEARCH_TTL = 30_000;
+
+export async function searchTokens(query: string): Promise<Mover[]> {
+  const q = query.trim();
+  if (q.length < 2) return [];
+  const key = q.toLowerCase();
+  const hit = searchCache.get(key);
+  if (hit && Date.now() - hit.at < SEARCH_TTL) return hit.data;
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
+    const res = await fetch(DEX_SEARCH + encodeURIComponent(q), {
+      signal: controller.signal,
+      cache: "no-store",
+      headers: { accept: "application/json" },
+    });
+    clearTimeout(timeout);
+    if (!res.ok) return [];
+    const json = (await res.json()) as { pairs?: DexPair[] };
+    const sol = (json.pairs ?? []).filter((p) => p.chainId === "solana");
+
+    const byMint = new Map<string, DexPair[]>();
+    for (const p of sol) {
+      const m = p.baseToken?.address;
+      if (!m) continue;
+      if (!byMint.has(m)) byMint.set(m, []);
+      byMint.get(m)!.push(p);
+    }
+    const movers = Array.from(byMint.entries())
+      .map(([m, ps]) => toMover(m, bestPair(ps, m)))
+      .filter((t) => t.priceUsd != null && t.pool)
+      .sort((a, b) => (b.liquidityUsd ?? 0) - (a.liquidityUsd ?? 0))
+      .slice(0, 14);
+
+    searchCache.set(key, { at: Date.now(), data: movers });
+    return movers;
+  } catch {
+    return [];
   }
 }
