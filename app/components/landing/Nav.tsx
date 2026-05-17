@@ -8,13 +8,8 @@ import { MobileMenu } from "./MobileMenu";
 export function Nav() {
   return (
     <nav className="relative z-[60] mx-auto flex w-full max-w-6xl items-center justify-between px-8 py-7 sm:px-16">
-      <Link
-        href="/"
-        aria-label="bro home"
-        className="bro-brand flex items-center gap-1.5"
-      >
-        <BroMark className="h-8 w-8" />
-        <span className="bro-display text-2xl text-ink">bro.</span>
+      <Link href="/" aria-label="bro home" className="bro-brand">
+        <BroMark className="h-9 w-9" />
       </Link>
       <div className="flex items-center gap-7 text-sm text-soft">
         <a
