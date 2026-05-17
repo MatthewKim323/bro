@@ -7,12 +7,62 @@
 //   <Reveal>...</Reveal>                  one element, fades + rises in view
 //   <Stagger><Reveal/><Reveal/></Stagger> children cascade in
 
-import { motion, type Variants } from "motion/react";
+import { AnimatePresence, motion, type Variants } from "motion/react";
 import type { ReactNode } from "react";
 
 export const BRO_EASE = [0.22, 1, 0.36, 1] as const;
 export const BRO_DUR = 0.7;
 export const BRO_STAGGER = 0.06;
+// in-app surfaces move faster than the landing's big entrance reveals:
+// still the same calm ease, just snappier so navigation never drags.
+export const BRO_UI_DUR = 0.34;
+
+/**
+ * The canvas panel cross-fade. The outgoing panel settles down and out
+ * while the incoming one rises in, on the locked ease. `mode="wait"`
+ * keeps it clean (no overlap flash). Keyed by panel, so switching
+ * threads inside chat does not retrigger it. Reduced motion is honored
+ * by the shell's <MotionConfig reducedMotion="user">.
+ */
+export function PanelTransition({
+  panelKey,
+  children,
+}: {
+  panelKey: string;
+  children: ReactNode;
+}) {
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={panelKey}
+        className="h-full"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -8 }}
+        transition={{ duration: BRO_UI_DUR, ease: BRO_EASE }}
+      >
+        {children}
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+// the sidebar's one-time entrance: blocks cascade in when you walk into
+// the app. plays once (the shell never remounts on navigation).
+export const railContainer: Variants = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.05, delayChildren: 0.04 },
+  },
+};
+export const railItem: Variants = {
+  hidden: { opacity: 0, y: 8 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: BRO_EASE },
+  },
+};
 
 const revealVariants: Variants = {
   hidden: { opacity: 0, y: 16 },

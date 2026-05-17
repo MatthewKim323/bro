@@ -8,6 +8,8 @@
 
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { MotionConfig } from "motion/react";
+import { PanelTransition } from "@/lib/motion";
 import { Grain } from "@/app/components/Grain";
 import { Sidebar } from "./Sidebar";
 import { StatusBar } from "./StatusBar";
@@ -55,41 +57,46 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex h-[100dvh] w-full overflow-hidden bg-bg">
-      <Sidebar
-        collapsed={collapsed}
-        onToggleCollapsed={toggleCollapsed}
-        threads={threads}
-        activeThreadId={activeId}
-        onNewThread={newThread}
-        onSelectThread={select}
-      />
-
-      <div className="flex min-w-0 flex-1 flex-col">
-        <StatusBar
-          status={shownStatus}
-          panel={panel}
-          onOpenPalette={() => setPaletteOpen(true)}
+    // one place owns motion for the whole dashboard: calm by default,
+    // and it instantly goes still under prefers-reduced-motion (BRO_PLAN
+    // §3.6 / UX rule). nothing below has to think about it again.
+    <MotionConfig reducedMotion="user">
+      <div className="flex h-[100dvh] w-full overflow-hidden bg-bg">
+        <Sidebar
+          collapsed={collapsed}
+          onToggleCollapsed={toggleCollapsed}
+          threads={threads}
+          activeThreadId={activeId}
+          onNewThread={newThread}
+          onSelectThread={select}
         />
-        <main
-          data-lenis-prevent
-          className="relative min-h-0 flex-1 overflow-y-auto"
-        >
-          {children}
-        </main>
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <StatusBar
+            status={shownStatus}
+            panel={panel}
+            onOpenPalette={() => setPaletteOpen(true)}
+          />
+          <main
+            data-lenis-prevent
+            className="relative min-h-0 flex-1 overflow-y-auto"
+          >
+            <PanelTransition panelKey={panel}>{children}</PanelTransition>
+          </main>
+        </div>
+
+        <CommandPalette
+          open={paletteOpen}
+          onClose={() => setPaletteOpen(false)}
+          onNewThread={newThread}
+        />
+
+        {/* the signature texture, the connective tissue of the design
+            system. it sits at z-40 (under the palette's z-50, over the
+            rail and panels) so the whole shell reads printed, not
+            digital. intensity is tuned only in .bro-grain { opacity }. */}
+        <Grain />
       </div>
-
-      <CommandPalette
-        open={paletteOpen}
-        onClose={() => setPaletteOpen(false)}
-        onNewThread={newThread}
-      />
-
-      {/* the signature texture, the connective tissue of the design
-          system. it sits at z-40 (under the palette's z-50, over the
-          rail and panels) so the whole shell reads printed, not
-          digital. intensity is tuned only in .bro-grain { opacity }. */}
-      <Grain />
-    </div>
+    </MotionConfig>
   );
 }
