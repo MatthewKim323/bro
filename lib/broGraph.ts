@@ -12,6 +12,23 @@ import { getDb } from "@/lib/mongo";
 const NODES = "bro_graph_nodes";
 const EDGES = "bro_graph_edges";
 
+// the mongodb driver defaults _id to ObjectId; ours are strings, so
+// the collections must be typed for the build's typecheck to pass.
+type NodeDoc = {
+  _id: string;
+  label: string;
+  count: number;
+  firstSeen: number;
+  lastSeen: number;
+};
+type EdgeDoc = {
+  _id: string;
+  a: string;
+  b: string;
+  weight: number;
+  lastSeen: number;
+};
+
 const STOP = new Set([
   "the","a","an","i","you","he","she","it","we","they","this","that","these",
   "those","and","or","but","if","so","yo","ok","okay","hey","hi","yeah","nah",
@@ -60,10 +77,11 @@ export async function ingest(text: string): Promise<{ entities: number }> {
 
     await Promise.all(
       entries.map(([key, label]) =>
-        db.collection(NODES).updateOne(
+        db.collection<NodeDoc>(NODES).updateOne(
           { _id: key },
           {
-            $setOnInsert: { _id: key, label, firstSeen: now },
+            // _id comes from the filter on upsert; do not set it here
+            $setOnInsert: { label, firstSeen: now },
             $set: { lastSeen: now },
             $inc: { count: 1 },
           },
@@ -79,10 +97,10 @@ export async function ingest(text: string): Promise<{ entities: number }> {
 
     await Promise.all(
       pairs.map(([a, b]) =>
-        db.collection(EDGES).updateOne(
+        db.collection<EdgeDoc>(EDGES).updateOne(
           { _id: `${a}${b}` },
           {
-            $setOnInsert: { _id: `${a}${b}`, a, b },
+            $setOnInsert: { a, b },
             $set: { lastSeen: now },
             $inc: { weight: 1 },
           },
@@ -106,7 +124,7 @@ export async function getGraph(limit = 80): Promise<{
     const db = await getDb();
     if (!db) return { ok: false, nodes: [], edges: [] };
     const nodeDocs = await db
-      .collection(NODES)
+      .collection<NodeDoc>(NODES)
       .find({})
       .sort({ count: -1 })
       .limit(limit)
@@ -117,7 +135,7 @@ export async function getGraph(limit = 80): Promise<{
       count: Number(n.count ?? 1),
     }));
     const live = new Set(nodes.map((n) => n.id));
-    const edgeDocs = await db.collection(EDGES).find({}).toArray();
+    const edgeDocs = await db.collection<EdgeDoc>(EDGES).find({}).toArray();
     const edges: GraphEdge[] = edgeDocs
       .filter((e) => live.has(String(e.a)) && live.has(String(e.b)))
       .map((e) => ({

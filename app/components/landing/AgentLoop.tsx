@@ -11,7 +11,11 @@
 
 import { useRef, useLayoutEffect, Fragment } from "react";
 import { gsap } from "gsap";
-import { BRO_EASE } from "@/lib/motion";
+
+// BRO_EASE is a framer-motion cubic-bezier tuple; gsap wants a named
+// ease string. "power3.out" is the faithful gsap equivalent of the
+// [0.22,1,0.36,1] calm decelerating curve.
+const GSAP_BRO_EASE = "power3.out";
 
 const DAYS = [
   { dow: "WED", date: 13 },
@@ -108,7 +112,7 @@ export function AgentLoop() {
       ctx = gsap.context(() => {
         const tl = gsap.timeline({
           repeat: -1,
-          defaults: { ease: BRO_EASE },
+          defaults: { ease: GSAP_BRO_EASE },
         });
 
         // start state (== end state)
