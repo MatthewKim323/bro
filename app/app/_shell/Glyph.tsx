@@ -30,22 +30,6 @@ const paths: Record<PanelKey, React.ReactNode> = {
       <circle {...S} cx="15.5" cy="13" r="2" />
     </>
   ),
-  // memory: stacked pages
-  memory: (
-    <>
-      <path {...S} d="M5 4.5h8l2 2v9H5z" />
-      <path {...S} d="M13 4.5v2h2M7.5 9h5M7.5 11.5h5" />
-    </>
-  ),
-  // schedule: a calm clock
-  schedule: (
-    <>
-      <circle {...S} cx="10" cy="10" r="6.5" />
-      <path {...S} d="M10 6.5V10l2.5 1.5" />
-    </>
-  ),
-  // activity: a heartbeat
-  activity: <path {...S} d="M3 10.5h3l2-4 3 8 2-5 1.5 1H17" />,
   // trade: two candles
   trade: (
     <>
