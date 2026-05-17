@@ -234,26 +234,25 @@ export function TradeDesk() {
     [setExtraMints],
   );
 
-  const onBuy = useCallback(() => {
-    if (!selected) return;
-    const r = buy(selected, Number(size), solUsd);
-    setNotice(
-      r.ok
-        ? { ok: true, msg: `bought ${selected.symbol} · ${Number(size)} SOL` }
-        : { ok: false, msg: r.reason },
-    );
-  }, [selected, size, solUsd, buy]);
+  const [busy, setBusy] = useState(false);
+
+  const onBuy = useCallback(async () => {
+    if (!selected || busy) return;
+    setBusy(true);
+    const r = await buy(selected, Number(size));
+    setNotice({ ok: r.ok, msg: r.message });
+    setBusy(false);
+  }, [selected, size, buy, busy]);
 
   const onSell = useCallback(
-    (mover: Mover, tokensAmt: number) => {
-      const r = sell(mover, tokensAmt, solUsd);
-      setNotice(
-        r.ok
-          ? { ok: true, msg: `closed ${mover.symbol}` }
-          : { ok: false, msg: r.reason },
-      );
+    async (mover: Mover) => {
+      if (busy) return;
+      setBusy(true);
+      const r = await sell(mover);
+      setNotice({ ok: r.ok, msg: r.message });
+      setBusy(false);
     },
-    [sell, solUsd],
+    [sell, busy],
   );
 
   return (
@@ -413,14 +412,15 @@ export function TradeDesk() {
           <button
             type="button"
             onClick={onBuy}
-            className="rounded-bro bg-accent px-8 py-3 text-sm font-medium text-bg transition-opacity duration-200 ease-[var(--ease-bro)] hover:opacity-85"
+            disabled={busy}
+            className="rounded-bro bg-accent px-8 py-3 text-sm font-medium text-bg transition-opacity duration-200 ease-[var(--ease-bro)] hover:opacity-85 disabled:opacity-40"
           >
-            buy
+            {busy ? "..." : "buy"}
           </button>
           <button
             type="button"
-            disabled={!heldSel}
-            onClick={() => selected && heldSel && onSell(selected, heldSel.tokens)}
+            disabled={!heldSel || busy}
+            onClick={() => selected && onSell(selected)}
             className="rounded-bro border border-line px-8 py-3 text-sm font-medium text-ink transition-colors duration-200 ease-[var(--ease-bro)] hover:bg-surface disabled:cursor-not-allowed disabled:opacity-30"
           >
             sell
@@ -527,7 +527,7 @@ export function TradeDesk() {
                             const mv = tokens.find(
                               (t) => t.symbol === p.symbol,
                             );
-                            if (mv) onSell(mv, p.tokens);
+                            if (mv) onSell(mv);
                           }}
                           className="w-14 text-right text-soft underline decoration-line underline-offset-4 transition-colors hover:text-ink"
                         >
