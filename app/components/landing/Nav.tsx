@@ -9,23 +9,16 @@
 // backdrop-filter on any ANCESTOR of it becomes that overlay's
 // containing block and traps it inside the bar. so: the frosted blur
 // lives in a SIBLING layer, the entrance animation is scoped to the
-// brand mark and the get-bro pill ONLY (neither is an ancestor of the
-// menu), and the <nav> itself never gets a transform. scroll state and
-// "back to top" are native now (no JS scroll engine). framer honors
-// prefers-reduced-motion via the shell-wide config / OS setting.
+// brand mark ONLY (not an ancestor of the menu), and the <nav> itself
+// never gets a transform. scroll state and "back to top" are native now
+// (no JS scroll engine). framer honors prefers-reduced-motion via the
+// OS setting.
 
-import Link from "next/link";
 import { useState, useEffect, type CSSProperties } from "react";
 import { motion } from "motion/react";
 import { BRO_EASE } from "@/lib/motion";
 import { BroMark } from "./BroMark";
 import { MobileMenu } from "./MobileMenu";
-
-const ENTER = (delay: number) => ({
-  initial: { opacity: 0, y: -14 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.7, ease: BRO_EASE, delay },
-});
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -82,7 +75,8 @@ export function Nav() {
         />
         {/* native anchor: html { scroll-behavior: smooth } glides it
             back to #top, and reduced-motion makes it an instant jump
-            for free. no JS, no scroll engine. */}
+            for free. no JS, no scroll engine. the framer entrance lives
+            here (brand only) so the <nav> stays transform-free. */}
         <motion.a
           href="#top"
           aria-label="back to top"
@@ -90,26 +84,17 @@ export function Nav() {
           style={
             { "--bro-body-color": "var(--color-accent)" } as CSSProperties
           }
-          {...ENTER(0.15)}
+          initial={{ opacity: 0, y: -14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: BRO_EASE, delay: 0.15 }}
         >
           <BroMark
             className={`transition-[height,width] duration-500 ease-[var(--ease-bro)] ${
-              scrolled ? "h-8 w-8" : "h-9 w-9"
+              scrolled ? "h-9 w-9" : "h-10 w-10"
             }`}
           />
         </motion.a>
-        <div className="flex items-center gap-7 text-sm text-soft">
-          {/* the wrapper carries the entrance transform so the Link
-              keeps its own :hover opacity, and the wrapper is not an
-              ancestor of the menu overlay (sibling), so no trap. */}
-          <motion.div {...ENTER(0.24)}>
-            <Link
-              href="/app"
-              className="rounded-bro bg-accent px-5 py-2.5 font-medium text-bg transition-opacity duration-200 ease-[var(--ease-bro)] hover:opacity-85"
-            >
-              get bro
-            </Link>
-          </motion.div>
+        <div className="flex items-center text-sm text-soft">
           <MobileMenu />
         </div>
       </div>
