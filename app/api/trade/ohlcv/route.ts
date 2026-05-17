@@ -10,7 +10,8 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const pool = url.searchParams.get("pool")?.trim();
   const tfRaw = url.searchParams.get("tf");
-  const tf: Timeframe = tfRaw === "1d" ? "1d" : "1h";
+  const tf: Timeframe =
+    tfRaw === "1d" ? "1d" : tfRaw === "1h" ? "1h" : "1m";
 
   if (!pool || !/^[A-Za-z0-9]{20,60}$/.test(pool)) {
     return Response.json(

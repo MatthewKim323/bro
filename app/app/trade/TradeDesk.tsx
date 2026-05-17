@@ -28,7 +28,8 @@ import { useLocalJSON } from "@/app/app/_shell/useLocalStore";
 import { useLedger } from "./useLedger";
 import { PriceChart } from "./PriceChart";
 
-type TF = "1h" | "1d";
+type TF = "1m" | "1h" | "1d";
+const TF_LABEL: Record<TF, string> = { "1m": "live", "1h": "1h", "1d": "1d" };
 const WATCH_MINTS = new Set(WATCHLIST.map((w) => w.mint));
 
 const fmtPrice = (p: number | null) => {
@@ -54,7 +55,7 @@ const upClass = (n: number | null) =>
 export function TradeDesk() {
   const [movers, setMovers] = useState<Movers | null>(null);
   const [sel, setSel] = useState<string>("OPAL");
-  const [tf, setTf] = useState<TF>("1h");
+  const [tf, setTf] = useState<TF>("1m");
   const [candles, setCandles] = useState<Candle[]>([]);
   const [loadedKey, setLoadedKey] = useState<string | null>(null);
   const [size, setSize] = useState("1");
@@ -104,7 +105,7 @@ export function TradeDesk() {
       }
     }
     tick();
-    const id = setInterval(tick, 20_000);
+    const id = setInterval(tick, 9_000);
     return () => {
       aliveRef.current = false;
       clearInterval(id);
@@ -151,10 +152,14 @@ export function TradeDesk() {
   const chartKey = pool ? `${pool}:${tf}` : null;
   const chartLoading = chartKey != null && loadedKey !== chartKey;
 
+  // the chart is LIVE: an initial load, then a poll so new candles roll
+  // in and the chart actually moves. loadedKey only gates the first
+  // spinner; interval refetches update silently (no flash). setState is
+  // always after the await, never synchronously in the effect.
   useEffect(() => {
     if (!chartKey || !pool) return;
     let alive = true;
-    async function load(key: string, p: string) {
+    async function load(key: string, p: string, first: boolean) {
       let next: Candle[] = [];
       try {
         const res = await fetch(
@@ -167,17 +172,39 @@ export function TradeDesk() {
         next = [];
       }
       if (!alive) return;
-      setCandles(next);
-      setLoadedKey(key);
+      if (next.length) setCandles(next);
+      else if (first) setCandles([]);
+      if (first) setLoadedKey(key);
     }
-    load(chartKey, pool);
+    load(chartKey, pool, true);
+    const every = tf === "1m" ? 9_000 : 30_000;
+    const id = setInterval(() => load(chartKey, pool, false), every);
     return () => {
       alive = false;
+      clearInterval(id);
     };
   }, [chartKey, pool, tf]);
 
   const wallet = walletState(ledger, tokens, solUsd);
   const heldSel = wallet.positions.find((p) => p.symbol === sel);
+
+  // between OHLCV polls, tick the last candle with the live price so the
+  // right edge of the chart keeps moving (this is the candle dexscreener
+  // shows "forming"). a stable memo so PriceChart can animate the change.
+  const livePrice = selected?.priceUsd ?? null;
+  const displayCandles = useMemo(() => {
+    if (!candles.length || livePrice == null) return candles;
+    const last = candles[candles.length - 1];
+    if (livePrice === last.c) return candles;
+    const merged = candles.slice();
+    merged[merged.length - 1] = {
+      ...last,
+      c: livePrice,
+      h: Math.max(last.h, livePrice),
+      l: Math.min(last.l, livePrice),
+    };
+    return merged;
+  }, [candles, livePrice]);
 
   const pick = useCallback(
     (m: Mover) => {
@@ -271,19 +298,25 @@ export function TradeDesk() {
                 {fmtPct(selected.change24h)}
               </span>
             </div>
-            <div className="flex gap-4">
-              {(["1h", "1d"] as TF[]).map((f) => (
+            <div className="flex items-center gap-4">
+              {(["1m", "1h", "1d"] as TF[]).map((f) => (
                 <button
                   key={f}
                   type="button"
                   onClick={() => setTf(f)}
-                  className={`pb-1 text-[12px] uppercase tracking-[0.16em] transition-colors ${
+                  className={`flex items-center gap-1.5 pb-1 text-[12px] uppercase tracking-[0.16em] transition-colors ${
                     tf === f
                       ? "border-b border-accent text-ink"
                       : "border-b border-transparent text-soft hover:text-ink"
                   }`}
                 >
-                  {f}
+                  {f === "1m" && tf === "1m" && (
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
+                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
+                    </span>
+                  )}
+                  {TF_LABEL[f]}
                 </button>
               ))}
             </div>
@@ -292,7 +325,7 @@ export function TradeDesk() {
 
         {/* the candlestick chart, big */}
         <div className="mt-4 min-h-0 flex-1">
-          <PriceChart candles={candles} loading={chartLoading} />
+          <PriceChart candles={displayCandles} loading={chartLoading} />
         </div>
 
         {/* buy / sell, one row */}

@@ -10,10 +10,13 @@ const GT = "https://api.geckoterminal.com/api/v2/networks/solana/pools";
 
 export type Candle = { t: number; o: number; h: number; l: number; c: number; v: number };
 
-export type Timeframe = "1h" | "1d";
+export type Timeframe = "1m" | "1h" | "1d";
 
-// timeframe -> GeckoTerminal (resolution, aggregate, candles, cache ttl)
+// timeframe -> GeckoTerminal (resolution, aggregate, candles, cache ttl).
+// "1m" is the live view: a short TTL so the desk can poll it every few
+// seconds and the chart actually moves.
 const TF: Record<Timeframe, { res: string; agg: number; limit: number; ttl: number }> = {
+  "1m": { res: "minute", agg: 1, limit: 120, ttl: 7_000 },
   "1h": { res: "hour", agg: 1, limit: 72, ttl: 60_000 },
   "1d": { res: "day", agg: 1, limit: 90, ttl: 300_000 },
 };
