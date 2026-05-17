@@ -46,8 +46,8 @@ const FEATURES: Feature[] = [
   {
     // body + a punchy pull line + button. no list.
     k: "acts",
-    t: "does the thing",
-    body: "bro runs on a schedule instead of waiting to be asked. it reads your inbound, drafts the reply, books the thing, and pings you only when something actually needs you.",
+    t: "acts on its own",
+    body: "bro runs on a schedule instead of waiting to be asked. it reads your inbound, drafts the reply, books the meeting, and pings you only when something actually needs you.",
     pull: { lead: "a chatbot answers.", emph: "bro ships." },
     cta: { label: "watch it act", href: "#demo" },
   },

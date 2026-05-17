@@ -47,11 +47,11 @@ export function Testimonials() {
     >
       <ScrollFade>
         <h2 className="bro-display max-w-3xl text-4xl leading-[1.04] text-ink text-balance sm:text-6xl">
-          loved by people with a lot to remember
+          loved by people who can&rsquo;t afford to forget
         </h2>
         <p className="bro-body mt-6 max-w-xl text-base leading-relaxed text-pretty sm:text-lg">
-          founders, operators, and the chronically busy. here is what a
-          month with bro feels like.
+          a student, a product manager, an engineer, on what a month
+          with bro actually changed.
         </p>
 
         <div className="mt-14 grid gap-6 lg:grid-cols-3">

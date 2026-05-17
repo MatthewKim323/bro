@@ -11,6 +11,7 @@ import { Nav } from "@/app/components/landing/Nav";
 import RotatingText from "@/app/components/landing/RotatingText";
 import { TechStack } from "@/app/components/landing/TechStack";
 import { IPhone } from "@/app/components/landing/IPhone";
+import { PhoneFloat } from "@/app/components/landing/PhoneFloat";
 import { PhoneChat } from "@/app/components/landing/PhoneChat";
 import { Features } from "@/app/components/landing/Features";
 import { Demo } from "@/app/components/landing/Demo";
@@ -21,10 +22,13 @@ import { Footer } from "@/app/components/landing/Footer";
 import { DarkZone } from "@/app/components/landing/DarkZone";
 import { HeroFade } from "@/app/components/landing/HeroFade";
 import { SmoothScroll } from "@/app/components/landing/SmoothScroll";
+import { Preloader } from "@/app/components/landing/Preloader";
+import { HeroGate } from "@/app/components/landing/HeroGate";
 
 export default function Home() {
   return (
     <>
+      <Preloader />
       <Nav />
       <SmoothScroll>
         <main>
@@ -75,6 +79,7 @@ export default function Home() {
           />
         </div>
 
+        <HeroGate>
         <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-12 px-8 py-16 sm:px-16 lg:grid-cols-[6fr_5fr] lg:gap-10 lg:py-24">
           <div>
             <Reveal>
@@ -82,7 +87,7 @@ export default function Home() {
                 bro.
               </h1>
             </Reveal>
-            <Reveal delay={0.08}>
+            <Reveal delay={0.4}>
               <div className="mt-5 flex items-baseline gap-2">
                 <span className="text-lg text-soft sm:text-xl">your</span>
                 <RotatingText
@@ -105,13 +110,13 @@ export default function Home() {
                 />
               </div>
             </Reveal>
-            <Reveal delay={0.16}>
+            <Reveal delay={0.65}>
               <p className="bro-body mt-6 max-w-md text-lg leading-relaxed sm:text-xl">
                 always on, always yours. it knows your world, remembers
                 everything, and actually acts on it.
               </p>
             </Reveal>
-            <Reveal delay={0.24}>
+            <Reveal delay={0.9}>
               <div className="mt-10 flex flex-wrap items-center gap-4">
                 <a
                   href="/bro.pkg"
@@ -128,17 +133,20 @@ export default function Home() {
                 </Link>
               </div>
             </Reveal>
-            <Reveal delay={0.32}>
+            <Reveal delay={1.15}>
               <TechStack />
             </Reveal>
           </div>
 
-          <Reveal delay={0.15} className="flex justify-center lg:justify-end">
-            <IPhone>
-              <PhoneChat />
-            </IPhone>
+          <Reveal delay={0.2} className="flex justify-center lg:justify-end">
+            <PhoneFloat>
+              <IPhone>
+                <PhoneChat />
+              </IPhone>
+            </PhoneFloat>
           </Reveal>
         </div>
+        </HeroGate>
       </section>
       </HeroFade>
 

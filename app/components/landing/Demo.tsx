@@ -30,7 +30,7 @@ export function Demo() {
       </h2>
       <p className="bro-body mt-6 max-w-xl text-base leading-relaxed text-pretty sm:text-lg">
         not a mockup. it reads what you ask, remembers the context, and
-        does the thing.
+        acts on it.
       </p>
 
       <div className="mx-auto mt-14 w-full max-w-4xl overflow-hidden rounded-bro border border-line bg-surface">
