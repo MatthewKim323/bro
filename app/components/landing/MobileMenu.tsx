@@ -4,11 +4,12 @@
 // the springy default to the bro ease), cream surface, no shadow. the
 // tabs are a FlowingMenu: lowercase Fraunces rows whose nearest edge
 // reveals a forest marquee on hover. esc closes, body scroll locks
-// while open, any tab closes it and native-smooth-scrolls to it.
+// while open, any tab closes it and ScrollSmoother-scrolls to it.
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useCycle, type Variants } from "motion/react";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { BroMark } from "./BroMark";
 import { MenuToggle } from "./MenuToggle";
 import { FlowingMenu } from "./FlowingMenu";
@@ -74,21 +75,32 @@ export function MobileMenu() {
     };
   }, [open, toggleOpen]);
 
-  // close the menu, then act. route targets (e.g. /app) navigate;
-  // in-page #targets scroll natively (the section's scroll-margin-top
-  // clears the fixed nav, html { scroll-behavior: smooth } glides it,
-  // and reduced-motion flips that to an instant jump for free).
-  // FlowingMenu prevents the native nav and calls this with the href.
+  // anchor links must go through ScrollSmoother (it owns scroll via a
+  // transform, so a native #hash jump desyncs or does nothing). close
+  // the menu, then scroll with the section top cleared of the fixed
+  // nav. native smooth-scroll fallback when there is no smoother
+  // (reduced motion). FlowingMenu prevents the native nav and calls
+  // this with the href.
   const select = (href: string) => {
     toggleOpen();
     window.setTimeout(() => {
+      // route targets (e.g. /app) navigate; in-page #targets scroll
+      // through ScrollSmoother (a native hash jump desyncs under it).
       if (!href.startsWith("#")) {
         router.push(href);
         return;
       }
-      document
-        .querySelector(href)
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      const target = document.querySelector(href);
+      if (!target) return;
+      const smoother = ScrollSmoother.get();
+      if (smoother) {
+        smoother.scrollTo(target as Element, true, "top 84px");
+      } else {
+        (target as HTMLElement).scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
     }, 60);
   };
 

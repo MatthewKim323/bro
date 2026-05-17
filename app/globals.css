@@ -15,15 +15,10 @@ body {
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  /* native smooth scroll. the landing now scrolls on the compositor
-     (no JS scroll engine), so anchor jumps glide for free and the
-     fixed grain never repaints per frame. the reduced-motion block
-     below flips this back to `auto` so it is honored everywhere. */
-  scroll-behavior: smooth;
-}
-/* anchored sections clear the fixed nav when you jump to them. */
-:where(#top, #features, #pricing, #waitlist) {
-  scroll-margin-top: 84px;
+  /* no CSS scroll-behavior: it fights GSAP ScrollSmoother (it hijacks
+     the programmatic scroll writes ScrollSmoother/ScrollTrigger make to
+     re-sync, desyncing the proxy and landing the page mid-document on
+     reload). ScrollSmoother owns smoothing on the landing already. */
 }
 
 /* ──────────────────── base typography ───────────────────── */

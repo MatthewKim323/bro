@@ -20,12 +20,14 @@ import { Waitlist } from "@/app/components/landing/Waitlist";
 import { Footer } from "@/app/components/landing/Footer";
 import { DarkZone } from "@/app/components/landing/DarkZone";
 import { HeroFade } from "@/app/components/landing/HeroFade";
+import { SmoothScroll } from "@/app/components/landing/SmoothScroll";
 
 export default function Home() {
   return (
     <>
       <Nav />
-      <main>
+      <SmoothScroll>
+        <main>
 
       {/* ── hero: copy left, live bro phone right (Folk-style 2-col) ── */}
       <HeroFade>
@@ -158,7 +160,8 @@ export default function Home() {
             <Waitlist />
             <Footer />
           </DarkZone>
-      </main>
+        </main>
+      </SmoothScroll>
     </>
   );
 }
