@@ -15,6 +15,9 @@ body {
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* anchor jumps (menu, nav, back to top) glide instead of cutting.
+     native, no Lenis. the reduced-motion block below forces auto. */
+  scroll-behavior: smooth;
 }
 
 /* ──────────────────── base typography ───────────────────── */

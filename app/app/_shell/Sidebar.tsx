@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { BroMark } from "@/app/components/landing/BroMark";
 import { PANELS, panelForPath } from "./nav";
 import { Glyph } from "./Glyph";
 import { groupThreads, type Thread } from "./useThreads";
@@ -50,10 +51,15 @@ export function Sidebar({
       <div className="flex h-14 shrink-0 items-center border-b border-line px-5">
         <Link
           href="/"
-          className="bro-display text-2xl leading-none text-ink"
           aria-label="bro, back to the landing page"
+          className="bro-brand flex items-center gap-1.5"
         >
-          {collapsed ? "b" : "bro"}
+          <BroMark className="h-7 w-7 shrink-0" />
+          {!collapsed && (
+            <span className="bro-display text-2xl leading-none text-ink">
+              bro
+            </span>
+          )}
         </Link>
       </div>
 

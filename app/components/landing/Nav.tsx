@@ -2,6 +2,7 @@
 // the brand signature in Fraunces. "get bro" is the single loud thing.
 
 import Link from "next/link";
+import { BroMark } from "./BroMark";
 import { MobileMenu } from "./MobileMenu";
 
 export function Nav() {
@@ -9,10 +10,11 @@ export function Nav() {
     <nav className="relative z-[60] mx-auto flex w-full max-w-6xl items-center justify-between px-8 py-7 sm:px-16">
       <Link
         href="/"
-        className="bro-display text-2xl text-ink"
         aria-label="bro home"
+        className="bro-brand flex items-center gap-1.5"
       >
-        bro.
+        <BroMark className="h-8 w-8" />
+        <span className="bro-display text-2xl text-ink">bro.</span>
       </Link>
       <div className="flex items-center gap-7 text-sm text-soft">
         <a

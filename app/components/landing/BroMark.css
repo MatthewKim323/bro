@@ -1,0 +1,34 @@
+/* the bro mascot. eyes blink on hover (of the brand link or the mark
+   itself). pure CSS, scoped to the eye elements. honors reduced motion. */
+
+.bro-mark {
+  display: block;
+}
+
+.bro-eye {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.bro-brand:hover .bro-eye,
+.bro-mark:hover .bro-eye {
+  animation: bro-blink 0.4s var(--ease-bro) both;
+}
+
+@keyframes bro-blink {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  48%,
+  52% {
+    transform: scaleY(0.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bro-brand:hover .bro-eye,
+  .bro-mark:hover .bro-eye {
+    animation: none;
+  }
+}

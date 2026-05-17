@@ -7,6 +7,7 @@
 
 import { useEffect } from "react";
 import { motion, useCycle, type Variants } from "motion/react";
+import { BroMark } from "./BroMark";
 import { MenuToggle } from "./MenuToggle";
 import { BRO_EASE } from "@/lib/motion";
 
@@ -73,12 +74,9 @@ export function MobileMenu() {
           aria-label="site"
           className="mx-auto flex min-h-screen w-full max-w-3xl flex-col justify-center px-8 sm:px-16"
         >
-          <motion.span
-            variants={item}
-            className="bro-label mb-10 block text-soft"
-          >
-            bro
-          </motion.span>
+          <motion.div variants={item} className="mb-10">
+            <BroMark className="h-11 w-11" />
+          </motion.div>
 
           <ul className="divide-y divide-line border-y border-line">
             {TABS.map((t) => (
