@@ -7,17 +7,10 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { motion } from "motion/react";
 import { BroMark } from "@/app/components/landing/BroMark";
-import { BRO_EASE, railContainer, railItem } from "@/lib/motion";
 import { PANELS, panelForPath } from "./nav";
 import { Glyph } from "./Glyph";
 import { groupThreads, type Thread } from "./useThreads";
-
-// the active highlight is one element shared across every nav row via a
-// layoutId. framer slides it (pill + accent tick) from the old row to
-// the new one on the locked ease: the million-dollar "magic move".
-const TICK_SPRING = { duration: 0.42, ease: BRO_EASE };
 
 type SidebarProps = {
   collapsed: boolean;
@@ -60,17 +53,9 @@ export function Sidebar({
           copy). the shell's grain prints it so it reads, not digital. */}
       <div aria-hidden className="bro-rail-field" />
 
-      <motion.div
-        className="relative z-10 flex h-full min-h-0 flex-col"
-        initial="hidden"
-        animate="show"
-        variants={railContainer}
-      >
+      <div className="relative z-10 flex h-full min-h-0 flex-col">
       {/* wordmark */}
-      <motion.div
-        variants={railItem}
-        className="flex h-14 shrink-0 items-center border-b border-line px-5"
-      >
+      <div className="flex h-14 shrink-0 items-center border-b border-line px-5">
         <Link
           href="/"
           aria-label="bro, back to the landing page"
@@ -83,10 +68,10 @@ export function Sidebar({
             </span>
           )}
         </Link>
-      </motion.div>
+      </div>
 
       {/* panel nav */}
-      <motion.div variants={railItem} className="px-3 py-4">
+      <div className="px-3 py-4">
         <ul className="flex flex-col gap-0.5">
           {PANELS.map((p) => {
             const isActive = active === p.key;
@@ -96,51 +81,37 @@ export function Sidebar({
                   href={p.href}
                   title={collapsed ? p.label : undefined}
                   className={`group relative flex items-center gap-3 rounded-bro px-3 py-2 text-sm transition-colors duration-200 ease-[var(--ease-bro)] ${
-                    isActive ? "text-ink" : "text-soft hover:text-ink"
+                    isActive
+                      ? "bg-surface text-ink"
+                      : "text-soft hover:text-ink"
                   } ${collapsed ? "justify-center" : ""}`}
                 >
-                  {/* the active highlight: one shared element that
-                      glides between rows (layoutId magic-move). the
-                      surface pill and the accent tick travel together. */}
+                  {/* the one loud thing on the rail: a hairline accent
+                      tick marks the active panel. nothing else shouts. */}
                   {isActive && (
-                    <>
-                      <motion.span
-                        layoutId="bro-rail-pill"
-                        transition={TICK_SPRING}
-                        aria-hidden
-                        className="absolute inset-0 rounded-bro bg-surface"
-                      />
-                      <motion.span
-                        layoutId="bro-rail-tick"
-                        transition={TICK_SPRING}
-                        aria-hidden
-                        className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-accent"
-                      />
-                    </>
+                    <span
+                      aria-hidden
+                      className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-accent"
+                    />
                   )}
                   <span
-                    className={`relative ${
-                      isActive
-                        ? "text-accent"
-                        : "text-soft group-hover:text-ink"
-                    }`}
+                    className={
+                      isActive ? "text-accent" : "text-soft group-hover:text-ink"
+                    }
                   >
                     <Glyph name={p.key} />
                   </span>
-                  {!collapsed && (
-                    <span className="relative">{p.label}</span>
-                  )}
+                  {!collapsed && <span>{p.label}</span>}
                 </Link>
               </li>
             );
           })}
         </ul>
-      </motion.div>
+      </div>
 
       {/* threads: only fully relevant on chat; dims back elsewhere */}
       {!collapsed && (
-        <motion.div
-          variants={railItem}
+        <div
           className={`flex min-h-0 flex-1 flex-col border-t border-line px-3 pt-4 transition-opacity duration-300 ${
             onChat ? "opacity-100" : "opacity-45"
           }`}
@@ -183,17 +154,14 @@ export function Sidebar({
               </>
             )}
           </div>
-        </motion.div>
+        </div>
       )}
 
       {/* spacer keeps identity pinned when threads are hidden (collapsed) */}
       {collapsed && <div className="flex-1" />}
 
       {/* identity + collapse */}
-      <motion.div
-        variants={railItem}
-        className="flex shrink-0 items-center justify-between border-t border-line px-4 py-3"
-      >
+      <div className="flex shrink-0 items-center justify-between border-t border-line px-4 py-3">
         {!collapsed && (
           <button
             type="button"
@@ -231,8 +199,8 @@ export function Sidebar({
             />
           </svg>
         </button>
-      </motion.div>
-      </motion.div>
+      </div>
+      </div>
     </nav>
   );
 }
