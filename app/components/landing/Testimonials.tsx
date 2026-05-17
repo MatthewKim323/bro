@@ -2,7 +2,7 @@
 // from tone, one radius, no shadow. monogram avatars (no fake photos,
 // reads cleaner and more premium).
 
-import { Rise } from "./Rise";
+import { ScrollFade } from "./ScrollFade";
 
 type Quote = {
   body: string;
@@ -31,7 +31,7 @@ const QUOTES: Quote[] = [
   },
   {
     body:
-      "ngl i only got it to flex on the group chat. now bro runs my whole life and i just vibe. genuinely have no clue what i do all day anymore. unreal.",
+      "ngl i only got it to flex on the group chat. now bro runs my whole life and i just vibe. genuinely have no clue what i do all day anymore.",
     name: "Stephen Hung",
     role: "swe at walmart",
     initials: "SH",
@@ -45,7 +45,7 @@ export function Testimonials() {
       id="testimonials"
       className="mx-auto w-full max-w-6xl scroll-mt-24 px-8 py-28 sm:px-16 sm:py-32"
     >
-      <Rise stagger>
+      <ScrollFade>
         <h2 className="bro-display max-w-3xl text-4xl leading-[1.04] text-ink text-balance sm:text-6xl">
           loved by people with a lot to remember
         </h2>
@@ -53,9 +53,8 @@ export function Testimonials() {
           founders, operators, and the chronically busy. here is what a
           month with bro feels like.
         </p>
-      </Rise>
 
-      <Rise stagger className="mt-14 grid gap-6 lg:grid-cols-3">
+        <div className="mt-14 grid gap-6 lg:grid-cols-3">
         {QUOTES.map((q) => (
           <figure
             key={q.name}
@@ -80,7 +79,8 @@ export function Testimonials() {
             </figcaption>
           </figure>
         ))}
-      </Rise>
+        </div>
+      </ScrollFade>
     </section>
   );
 }

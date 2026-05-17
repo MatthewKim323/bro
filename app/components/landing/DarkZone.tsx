@@ -44,7 +44,11 @@ export function DarkZone({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <div ref={ref} className="relative flex min-h-screen flex-col">
+    <div
+      ref={ref}
+      id="last-zone"
+      className="relative flex min-h-screen flex-col"
+    >
       <div
         ref={bg}
         aria-hidden

@@ -3,7 +3,7 @@
 // the browser app, pro downloads bro).
 
 import Link from "next/link";
-import { Rise } from "./Rise";
+import { ScrollFade } from "./ScrollFade";
 
 const FREE = [
   "the browser app",
@@ -34,16 +34,15 @@ export function Pricing() {
       id="pricing"
       className="mx-auto w-full max-w-6xl scroll-mt-24 px-8 py-28 sm:px-16 sm:py-32"
     >
-      <Rise stagger>
+      <ScrollFade>
         <h2 className="bro-display max-w-3xl text-4xl leading-[1.04] text-ink text-balance sm:text-6xl">
           simple pricing
         </h2>
         <p className="bro-body mt-6 max-w-xl text-base leading-relaxed text-pretty sm:text-lg">
           one bro. yours. cancel anytime, no games.
         </p>
-      </Rise>
 
-      <Rise stagger className="mx-auto mt-14 grid w-full max-w-3xl gap-6 sm:grid-cols-2">
+        <div className="mx-auto mt-14 grid w-full max-w-3xl gap-6 sm:grid-cols-2">
         <div className="flex flex-col rounded-bro border border-line bg-surface p-8 transition-transform duration-300 ease-[var(--ease-bro)] hover:-translate-y-1">
           <div className="bro-display text-2xl text-ink">free</div>
           <div className="mt-4 flex items-end gap-1">
@@ -91,7 +90,8 @@ export function Pricing() {
             get bro
           </a>
         </div>
-      </Rise>
+        </div>
+      </ScrollFade>
     </section>
   );
 }

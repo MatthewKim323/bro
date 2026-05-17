@@ -10,6 +10,7 @@
 
 import { useRef, useLayoutEffect } from "react";
 import { gsap } from "gsap";
+import { BroMark } from "./BroMark";
 import "./MemoryGraph.css";
 
 const TONE = [
@@ -32,7 +33,7 @@ const SPECS: Spec[] = [
   { mesh: [12, 18], final: [8, 9] },
   { label: "date w/ scarlett", mesh: [30, 9], final: [27, 12] },
   { mesh: [49, 16], final: [50, 7] },
-  { label: "buy more sol", mesh: [70, 11], final: [73, 14] },
+  { label: "check pumpfun coins", mesh: [70, 11], final: [73, 14] },
   { mesh: [88, 22], final: [93, 11] },
   { label: "walk the dog", mesh: [20, 38], final: [21, 31] },
   { label: "ship the launch", mesh: [41, 33], final: [31, 50] },
@@ -60,6 +61,7 @@ export function MemoryGraph() {
   const dotRefs = useRef<(SVGCircleElement | null)[]>([]);
   const pillRefs = useRef<(SVGGElement | null)[]>([]);
   const lineRefs = useRef<(SVGLineElement | null)[]>([]);
+  const broRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     if (!svgRef.current) return;
@@ -163,6 +165,23 @@ export function MemoryGraph() {
         defaults: { ease: "power1.inOut" },
       });
 
+      const broEl = broRef.current;
+      gsap.set(broEl, { opacity: 0, scale: 0.7 });
+
+      // one blink, the exact same one as the hover blink (drives the
+      // same @keyframes bro-blink via a class). a double rAF after
+      // removing the class guarantees the browser paints the
+      // no-animation state first, so it actually restarts every loop
+      // (the sync offsetWidth trick was unreliable inside the ticker).
+      const blinkOnce = () => {
+        const m = broEl?.querySelector<HTMLElement>(".bro-mark");
+        if (!m) return;
+        m.classList.remove("bro-blink-now");
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => m.classList.add("bro-blink-now"));
+        });
+      };
+
       loop.to({}, { duration: 1.8 }); // live mesh beat
 
       // gather into a loose knot (cluster, not a point)
@@ -181,8 +200,22 @@ export function MemoryGraph() {
       });
       loop.to(E, { o: 0.07, duration: 0.9 }, "knot+=0.1");
 
+      // bro pops in over the collapsing knot and blinks once
+      loop.to(
+        broEl,
+        { opacity: 1, scale: 1, duration: 0.55, ease: "back.out(1.5)" },
+        "knot+=0.15",
+      );
+      loop.call(blinkOnce, undefined, "knot+=1.05");
+
       // bloom: labeled -> spaced bubbles, others -> faint bg dots
       loop.add("bloom");
+      // bro vanishes and the bubbles spit out from where he was
+      loop.to(
+        broEl,
+        { opacity: 0, scale: 0.82, duration: 0.4, ease: "power2.in" },
+        "bloom+=0.25",
+      );
       SPECS.forEach((sp, i) => {
         loop.to(
           N[i],
@@ -304,6 +337,17 @@ export function MemoryGraph() {
           );
         })}
       </svg>
+
+      {/* bro covers the collapsed knot, blinks once, then the bubbles
+          spit out from where he was. */}
+      <div
+        ref={broRef}
+        aria-hidden
+        style={{ opacity: 0 }}
+        className="pointer-events-none absolute inset-0 flex items-center justify-center"
+      >
+        <BroMark className="h-2/5 w-auto aspect-square" />
+      </div>
     </div>
   );
 }

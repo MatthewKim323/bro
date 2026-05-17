@@ -21,8 +21,10 @@ import {
   useEffect,
   useLayoutEffect,
   type CSSProperties,
+  type MouseEvent,
 } from "react";
 import { gsap } from "gsap";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { BroMark } from "./BroMark";
 import { MobileMenu } from "./MobileMenu";
 
@@ -36,13 +38,16 @@ export function Nav() {
       const past = window.scrollY > window.innerHeight * 0.85;
       setScrolled((p) => (p === past ? p : past));
 
-      // hide the whole bar once the dark "keep up" + footer zone takes
-      // over the screen, bring it back smoothly on the way up. measured
-      // off the element's visual rect so it stays correct under
-      // ScrollSmoother (which moves content by transform).
-      const zone = document.getElementById("waitlist");
+      // hide the whole bar once the last section (the dark zone:
+      // keep-up + footer) enters. triggered off the DarkZone wrapper
+      // itself, which is min-h-screen, so its top reliably crosses this
+      // threshold as you scroll in (unlike the short #waitlist near the
+      // document end, whose top could never reach the threshold before
+      // the page bottom). visual rect so it stays correct under
+      // ScrollSmoother.
+      const zone = document.getElementById("last-zone");
       const hide = zone
-        ? zone.getBoundingClientRect().top < window.innerHeight * 0.45
+        ? zone.getBoundingClientRect().top < window.innerHeight * 0.6
         : false;
       setHidden((p) => (p === hide ? p : hide));
     };
@@ -85,6 +90,18 @@ export function Nav() {
     return () => ctx.revert();
   }, []);
 
+  // brand mark: smooth-scroll back to the top (ScrollSmoother owns
+  // scroll, so a route nav / native jump would be wrong here).
+  const goTop = (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const smoother = ScrollSmoother.get();
+    if (smoother) {
+      smoother.scrollTo(0, true);
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   return (
     <nav
       ref={navRef}
@@ -113,9 +130,10 @@ export function Nav() {
               : "border-transparent bg-transparent"
           }`}
         />
-        <Link
-          href="/"
-          aria-label="bro home"
+        <a
+          href="#top"
+          onClick={goTop}
+          aria-label="back to top"
           data-sauce
           className="bro-brand"
           style={
@@ -127,7 +145,7 @@ export function Nav() {
               scrolled ? "h-8 w-8" : "h-9 w-9"
             }`}
           />
-        </Link>
+        </a>
         <div className="flex items-center gap-7 text-sm text-soft">
           <Link
             href="/app"

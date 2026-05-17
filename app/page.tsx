@@ -19,6 +19,7 @@ import { Pricing } from "@/app/components/landing/Pricing";
 import { Waitlist } from "@/app/components/landing/Waitlist";
 import { Footer } from "@/app/components/landing/Footer";
 import { DarkZone } from "@/app/components/landing/DarkZone";
+import { HeroFade } from "@/app/components/landing/HeroFade";
 import { SmoothScroll } from "@/app/components/landing/SmoothScroll";
 
 export default function Home() {
@@ -29,6 +30,7 @@ export default function Home() {
         <main>
 
       {/* ── hero: copy left, live bro phone right (Folk-style 2-col) ── */}
+      <HeroFade>
       <section
         id="top"
         className="relative flex min-h-[100svh] items-center overflow-hidden"
@@ -138,6 +140,7 @@ export default function Home() {
           </Reveal>
         </div>
       </section>
+      </HeroFade>
 
           <div className="relative pt-24 sm:pt-32">
             {/* cream fade at the hero/features seam (this sits exactly

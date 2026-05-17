@@ -11,7 +11,8 @@
 }
 
 .bro-brand:hover .bro-eye,
-.bro-mark:hover .bro-eye {
+.bro-mark:hover .bro-eye,
+.bro-mark.bro-blink-now .bro-eye {
   animation: bro-blink 0.4s var(--ease-bro) both;
 }
 
@@ -28,7 +29,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .bro-brand:hover .bro-eye,
-  .bro-mark:hover .bro-eye {
+  .bro-mark:hover .bro-eye,
+  .bro-mark.bro-blink-now .bro-eye {
     animation: none;
   }
 }

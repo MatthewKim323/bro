@@ -39,23 +39,27 @@ export function PaperTradeChat() {
     if (!el) return;
 
     const run = () => {
-      let t = 500;
+      // calm ~2s cadence per message. bro shows the typing bubble for
+      // the latter ~1.4s before each reply; "lfg" gets an extra beat.
+      let t = 700;
       THREAD.forEach((turn, i) => {
         if (turn.role === "bro") {
-          // a beat before he starts typing, then a realistic typing pause
-          t += 900;
-          timers.current.push(setTimeout(() => setTyping(true), t));
-          t += 2400;
+          timers.current.push(
+            setTimeout(() => setTyping(true), t + 600),
+          );
           timers.current.push(
             setTimeout(() => {
               setTyping(false);
               setShown(i + 1);
-            }, t),
+            }, t + 2000),
           );
-          t += 700;
+          t += 2000;
         } else {
-          timers.current.push(setTimeout(() => setShown(i + 1), t));
-          t += 900;
+          const beat = turn.text === "lfg" ? 700 : 0;
+          timers.current.push(
+            setTimeout(() => setShown(i + 1), t + beat),
+          );
+          t += 2000 + beat;
         }
       });
     };
@@ -112,10 +116,10 @@ export function PaperTradeChat() {
       ))}
       {typing && (
         <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: BRO_EASE }}
-          className={`flex justify-start ${
+          initial={{ opacity: 0, scale: 0.8, y: 8 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: BRO_EASE }}
+          className={`flex origin-bottom-left justify-start ${
             shown > 0 && THREAD[shown - 1].role === "bro" ? "mt-1" : "mt-4"
           }`}
         >

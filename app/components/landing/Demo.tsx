@@ -3,7 +3,7 @@
 // no shadow. static by design (restraint reads as expensive).
 
 import { BroMark } from "./BroMark";
-import { Rise } from "./Rise";
+import { ScrollFade } from "./ScrollFade";
 
 const SIDE = [
   { label: "chat", active: true },
@@ -24,7 +24,7 @@ export function Demo() {
       id="demo"
       className="mx-auto w-full max-w-6xl scroll-mt-24 px-8 py-28 sm:px-16 sm:py-32"
     >
-      <Rise stagger>
+      <ScrollFade>
       <h2 className="bro-display max-w-3xl text-4xl leading-[1.04] text-ink text-balance sm:text-6xl">
         see bro work
       </h2>
@@ -119,7 +119,7 @@ export function Demo() {
           </div>
         </div>
       </div>
-      </Rise>
+      </ScrollFade>
     </section>
   );
 }

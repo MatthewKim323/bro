@@ -1,11 +1,13 @@
 "use client";
 
-// "does the thing": a self-running agentic loop. bro scans the dms,
-// pulls out an event, and books it into the calendar, on its own,
-// forever. pure DOM + one GSAP timeline (no WebGL, FPS-safe). palette
-// tones, one radius, no shadow. this is an illustrative depiction of
-// agentic behavior, not a literal integration claim. honors
-// prefers-reduced-motion (one static resolved state).
+// "does the thing": one continuous loop, no narration. a dm comes in,
+// bro quietly understands the date (a soft tint + an underline drawn
+// under the time), then a single real event pill LIFTS off the message
+// and flies into the exact calendar slot, settling as the booked
+// event. the loop's end state equals its start state, so repeat is
+// seamless (no fade-to-zero refresh). measured geometry so the flight
+// is pixel-true and responsive. pure DOM + GSAP, FPS-safe. honors
+// prefers-reduced-motion (one static booked state).
 
 import { useRef, useLayoutEffect, Fragment } from "react";
 import { gsap } from "gsap";
@@ -20,116 +22,162 @@ const DAYS = [
 const HOURS = ["6 PM", "7 PM", "8 PM", "9 PM"];
 const GRID = { gridTemplateColumns: "30px repeat(4, 1fr)" } as const;
 
+// pre-existing calendar items (day index 0..3, hour index 0..3)
+const STATIC = [
+  { label: "gym", day: 0, hour: 0 },
+  { label: "gym", day: 1, hour: 0 },
+  { label: "study", day: 1, hour: 3 },
+];
+
+const cell = (day: number, hour: number) => ({
+  left: `calc(30px + ${day} * ((100% - 30px) / 4) + 3px)`,
+  width: "calc((100% - 30px) / 4 - 6px)",
+  top: `calc(${hour} * 2.5rem + 3px)`,
+  height: "calc(2.5rem - 6px)",
+});
+const TINT = "color-mix(in oklab, var(--color-accent) 13%, var(--color-bg))";
+
 export function AgentLoop() {
   const root = useRef<HTMLDivElement>(null);
-  const status = useRef<HTMLSpanElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const bubbleRef = useRef<HTMLDivElement>(null);
+  const pillRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     const el = root.current;
-    const st = status.current;
-    if (!el || !st) return;
+    const grid = gridRef.current;
+    const bubble = bubbleRef.current;
+    const pill = pillRef.current;
+    if (!el || !grid || !bubble || !pill) return;
 
-    const q = gsap.utils.selector(el);
     const reduce = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    if (reduce) {
-      st.textContent = "booked it";
-      gsap.set(q(".ag-event"), { opacity: 1, scale: 1 });
-      gsap.set(q(".ag-chip"), { opacity: 0 });
-      gsap.set(q(".ag-key"), {
-        backgroundColor:
-          "color-mix(in oklab, var(--color-accent) 14%, var(--color-bg))",
-      });
-      return;
-    }
+    let ctx: gsap.Context | null = null;
 
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        repeat: -1,
-        defaults: { ease: BRO_EASE },
-      });
+    const build = () => {
+      ctx?.revert();
 
-      tl.set(".ag-msg", { opacity: 0, y: 8 });
-      tl.set(".ag-chip", { opacity: 0, scale: 0.6, y: 0 });
-      tl.set(".ag-event", { opacity: 0, scale: 0.85 });
-      tl.set(".ag-scan", { xPercent: 0, opacity: 0 });
-      tl.set(".ag-key", { backgroundColor: "var(--color-bg)" });
-      tl.call(() => {
-        st.textContent = "idle";
-      });
+      const r = el.getBoundingClientRect();
+      const g = grid.getBoundingClientRect();
+      const b = bubble.getBoundingClientRect();
+      const colW = (g.width - 30) / 4;
 
-      tl.to(".ag-msg", {
-        opacity: 1,
-        y: 0,
-        stagger: 0.16,
-        duration: 0.5,
-      });
-      tl.to({}, { duration: 0.4 });
-
-      // scan
-      tl.call(() => {
-        st.textContent = "reading dms";
-      });
-      tl.fromTo(
-        ".ag-scan",
-        { xPercent: 0, opacity: 0 },
-        { xPercent: 360, opacity: 1, duration: 1.1, ease: "power1.inOut" },
+      // measure the REAL SAT (3) / 8 PM (2) cell so the pill lands
+      // exactly where the grid drew it, inset 3px each side to match
+      // the gym/study blocks (perfectly centered in the cell).
+      const cellEl = grid.querySelector<HTMLElement>(
+        '[data-day="3"][data-hour="2"]',
       );
-      tl.to(".ag-scan", { opacity: 0, duration: 0.25 }, ">-0.25");
+      const cRect = (cellEl ?? grid).getBoundingClientRect();
+      const slot = {
+        x: cRect.left - r.left + 3,
+        y: cRect.top - r.top + 3,
+        w: cRect.width - 6,
+        h: cRect.height - 6,
+      };
+      // lifts off the underlined time in the message
+      const origin = {
+        x: b.left - r.left + b.width * 0.16,
+        y: b.top - r.top + b.height * 0.46,
+        w: Math.min(120, colW * 1.05),
+        h: 24,
+      };
 
-      // found it
-      tl.to(
-        ".ag-key",
-        {
-          backgroundColor:
-            "color-mix(in oklab, var(--color-accent) 14%, var(--color-bg))",
-          duration: 0.4,
-        },
-        ">-0.1",
-      );
-      tl.call(() => {
-        st.textContent = "found an event";
-      });
-      tl.to(".ag-chip", { opacity: 1, scale: 1, duration: 0.4 });
-      tl.to({}, { duration: 0.35 });
+      const setPill = (
+        s: typeof slot,
+        extra: gsap.TweenVars = {},
+      ) =>
+        gsap.set(pill, {
+          left: s.x,
+          top: s.y,
+          width: s.w,
+          height: s.h,
+          ...extra,
+        });
 
-      // hand off to the calendar
-      tl.call(() => {
-        st.textContent = "scheduling";
-      });
-      tl.to(".ag-chip", {
-        y: 150,
-        opacity: 0,
-        scale: 0.85,
-        duration: 0.9,
-      });
-      tl.to(
-        ".ag-event",
-        { opacity: 1, scale: 1, duration: 0.5 },
-        ">-0.45",
-      );
-      tl.call(() => {
-        st.textContent = "booked it";
-      });
+      if (reduce) {
+        gsap.set(bubble, { backgroundColor: TINT });
+        gsap.set(".ag-underline", { scaleX: 1 });
+        setPill(slot, { opacity: 1 });
+        gsap.set(".ag-check", { opacity: 1 });
+        return;
+      }
 
-      tl.to({}, { duration: 2.4 });
+      ctx = gsap.context(() => {
+        const tl = gsap.timeline({
+          repeat: -1,
+          defaults: { ease: BRO_EASE },
+        });
 
-      // reset, seamless repeat
-      tl.to(
-        [".ag-msg", ".ag-event"],
-        { opacity: 0, duration: 0.5 },
-      );
-      tl.to(
-        ".ag-key",
-        { backgroundColor: "var(--color-bg)", duration: 0.3 },
-        "<",
-      );
-      tl.to({}, { duration: 0.5 });
-    }, root);
+        // start state (== end state)
+        tl.set(bubble, { backgroundColor: "var(--color-bg)" });
+        tl.set(".ag-msg", { opacity: 0, y: 12 });
+        tl.set(".ag-underline", { scaleX: 0, transformOrigin: "left" });
+        tl.set(".ag-check", { opacity: 0 });
+        // origin reset lives IN the timeline so it replays each loop
+        tl.set(pill, {
+          left: origin.x,
+          top: origin.y,
+          width: origin.w,
+          height: origin.h,
+          opacity: 0,
+          scale: 1,
+        });
 
-    return () => ctx.revert();
+        // 1. message arrives
+        tl.to(".ag-msg", { opacity: 1, y: 0, duration: 0.7 });
+        tl.to({}, { duration: 0.55 });
+
+        // 2. bro understands the date: soft tint + underline drawn
+        tl.to(bubble, { backgroundColor: TINT, duration: 0.5 });
+        tl.to(".ag-underline", { scaleX: 1, duration: 0.55 }, "<");
+        tl.to({}, { duration: 0.3 });
+
+        // 3. a single real pill lifts off the message
+        tl.to(pill, { opacity: 1, duration: 0.32 });
+
+        // 4. flies straight into the exact slot and snaps clean: no
+        // overshoot ease (that was the sway), just the smooth BRO_EASE.
+        tl.to(pill, {
+          left: slot.x,
+          top: slot.y,
+          width: slot.w,
+          height: slot.h,
+          duration: 1,
+        });
+        tl.to(".ag-check", { opacity: 1, duration: 0.3 }, ">-0.2");
+
+        // 5. booked, hold
+        tl.to({}, { duration: 2.1 });
+
+        // 6. seamless clear back to the start state (overlaps so there
+        // is never a blank frame; loop restart snaps pill to origin
+        // while it is invisible)
+        tl.to(pill, { opacity: 0, scale: 0.92, duration: 0.55 });
+        tl.to(".ag-underline", { scaleX: 0, duration: 0.45 }, "<");
+        tl.to(
+          bubble,
+          { backgroundColor: "var(--color-bg)", duration: 0.45 },
+          "<",
+        );
+        tl.to(
+          ".ag-msg",
+          { opacity: 0, y: 10, duration: 0.5 },
+          "<0.1",
+        );
+        tl.to({}, { duration: 0.45 });
+      }, root);
+    };
+
+    build();
+    const ro = new ResizeObserver(() => build());
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+      ctx?.revert();
+    };
   }, []);
 
   return (
@@ -138,51 +186,30 @@ export function AgentLoop() {
       aria-hidden
       className="relative mx-auto aspect-[4/5] w-full max-w-sm select-none"
     >
-      {/* dms */}
-      <div className="relative overflow-hidden rounded-bro border border-line bg-surface p-4">
+      {/* dm */}
+      <div className="rounded-bro border border-line bg-surface p-4">
         <div className="flex items-center gap-2.5">
           <span className="grid h-7 w-7 place-items-center rounded-full bg-sage-deep text-[10px] font-medium text-bg">
-            SJ
+            A
           </span>
           <span className="flex flex-col leading-tight">
-            <span className="text-xs font-medium text-ink">scarlett</span>
-            <span className="text-[10px] text-soft">instagram · dms</span>
+            <span className="text-xs font-medium text-ink">Angelina</span>
+            <span className="text-[10px] text-soft">instagram dm</span>
           </span>
-          <span
-            ref={status}
-            className="ag-status ml-auto rounded-bro bg-bg px-2 py-1 text-[10px] tabular-nums text-soft"
+        </div>
+
+        <div className="ag-msg mt-4 flex">
+          <div
+            ref={bubbleRef}
+            className="relative max-w-[84%] rounded-[14px] bg-bg px-3 py-2 text-[12px] leading-snug text-ink"
           >
-            idle
-          </span>
-        </div>
-
-        <div className="mt-4 flex flex-col gap-2">
-          <div className="ag-msg flex">
-            <div className="max-w-[82%] rounded-[14px] bg-bg px-3 py-2 text-[12px] leading-snug text-ink">
-              still on for the gym saturday?
-            </div>
-          </div>
-          <div className="ag-msg flex">
-            <div className="ag-key max-w-[82%] rounded-[14px] bg-bg px-3 py-2 text-[12px] leading-snug text-ink">
-              dinner thursday, 8pm? booked us somewhere
-            </div>
+            boba at tims saturday?
+            <span
+              className="ag-underline absolute bottom-1.5 left-3 right-3 h-px bg-accent"
+              style={{ transform: "scaleX(0)" }}
+            />
           </div>
         </div>
-
-        <div
-          className="ag-scan pointer-events-none absolute inset-y-0 -left-1/4 w-1/4"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent, color-mix(in oklab, var(--color-accent) 26%, transparent), transparent)",
-          }}
-        />
-      </div>
-
-      <div
-        className="ag-chip absolute left-6 top-[34%] rounded-bro bg-accent px-2.5 py-1 text-[11px] font-medium text-bg"
-        style={{ opacity: 0 }}
-      >
-        dinner · thu 8pm
       </div>
 
       {/* calendar, week view */}
@@ -225,17 +252,20 @@ export function AgentLoop() {
 
         <div className="relative">
           <div
+            ref={gridRef}
             className="grid"
             style={{ ...GRID, gridAutoRows: "2.5rem" }}
           >
-            {HOURS.map((h) => (
+            {HOURS.map((h, hi) => (
               <Fragment key={h}>
                 <div className="border-t border-line pr-1.5 pt-0.5 text-right text-[9px] leading-none text-soft">
                   {h}
                 </div>
-                {DAYS.map((d) => (
+                {DAYS.map((d, di) => (
                   <div
                     key={d.dow}
+                    data-day={di}
+                    data-hour={hi}
                     className="border-l border-t border-line"
                   />
                 ))}
@@ -244,33 +274,15 @@ export function AgentLoop() {
           </div>
 
           <div className="pointer-events-none absolute inset-0">
-            <div
-              className="absolute flex flex-col justify-center overflow-hidden rounded-[5px] border-l-2 border-line bg-surface px-2 text-[9px] leading-tight text-soft"
-              style={{
-                left: "calc(30px + 3 * ((100% - 30px) / 4) + 3px)",
-                width: "calc((100% - 30px) / 4 - 6px)",
-                top: "calc(2.5rem + 3px)",
-                height: "calc(2.5rem - 6px)",
-              }}
-            >
-              gym
-            </div>
-
-            <div
-              className="ag-event absolute flex flex-col justify-center overflow-hidden rounded-[5px] border-l-2 border-accent px-2 leading-tight text-ink"
-              style={{
-                left: "calc(30px + 1 * ((100% - 30px) / 4) + 3px)",
-                width: "calc((100% - 30px) / 4 - 6px)",
-                top: "calc(2 * 2.5rem + 3px)",
-                height: "calc(2.5rem - 6px)",
-                backgroundColor:
-                  "color-mix(in oklab, var(--color-accent) 20%, var(--color-bg))",
-                opacity: 0,
-              }}
-            >
-              <span className="text-[10px] font-semibold">dinner</span>
-              <span className="text-[8.5px] text-soft">8 to 9 PM</span>
-            </div>
+            {STATIC.map((s, i) => (
+              <div
+                key={i}
+                className="absolute flex flex-col justify-center overflow-hidden rounded-[5px] border-l-2 border-line bg-surface px-2 text-[9px] leading-tight text-soft"
+                style={cell(s.day, s.hour)}
+              >
+                {s.label}
+              </div>
+            ))}
 
             <div
               className="absolute left-[30px] right-0 flex items-center"
@@ -281,6 +293,34 @@ export function AgentLoop() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* the single real pill: lifts off the message, flies into the
+          slot, and stays as the booked event */}
+      <div
+        ref={pillRef}
+        className="absolute z-10 flex items-center justify-between gap-1 overflow-hidden rounded-[6px] border-l-2 border-accent px-2 leading-tight text-ink"
+        style={{
+          backgroundColor:
+            "color-mix(in oklab, var(--color-accent) 20%, var(--color-bg))",
+          opacity: 0,
+        }}
+      >
+        <span className="flex min-w-0 flex-col">
+          <span className="text-[10px] font-semibold">boba</span>
+          <span className="flex items-center gap-0.5 text-[8.5px] text-soft">
+            <svg
+              viewBox="0 0 24 24"
+              className="h-2.5 w-2.5 shrink-0"
+              fill="currentColor"
+              aria-hidden
+            >
+              <path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.4A2.4 2.4 0 1 1 12 6.6a2.4 2.4 0 0 1 0 4.8z" />
+            </svg>
+            <span className="truncate">Tim&rsquo;s Boba</span>
+          </span>
+        </span>
+        <span className="ag-check shrink-0 text-[10px] text-accent">✓</span>
       </div>
     </div>
   );
