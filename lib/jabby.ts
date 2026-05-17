@@ -10,10 +10,48 @@
 // / jobs / settings land in their own phases against this same module.
 //
 // SERVER ONLY. import this from route handlers, never a client component
-// (it reads JABBY_URL and spawns localhost fetches). not enforced by the
-// `server-only` package yet to keep deps lean; enforce when chat lands.
+// (it resolves the jabby URL and spawns localhost fetches). not enforced
+// by the `server-only` package yet to keep deps lean; enforce later.
+//
+// RELIABILITY: jabby's web server is pinned in its settings.json to
+// 127.0.0.1:4632, but jabby's startWebWithFallback will silently bind
+// 4633+ if 4632 is busy at boot. it records the REAL host/port it chose
+// in its state.json. so bro resolves the base URL as:
+//   1. JABBY_URL env  (explicit override: a tunnel, a remote, testing)
+//   2. jabby's state.json .web {host,port}  (self-heals port drift)
+//   3. http://127.0.0.1:4632  (the pinned default)
+// resolution is cached for 5s so drift recovers within one poll cycle
+// without a bro restart, and the FS is not touched per request.
 
-const JABBY_URL = process.env.JABBY_URL?.replace(/\/$/, "") ?? "http://127.0.0.1:4632";
+import { readFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
+
+const DEFAULT_BASE = "http://127.0.0.1:4632";
+const STATE_FILE =
+  process.env.JABBY_STATE_FILE ||
+  join(homedir(), "Documents", "jabby", ".claude", "jabby", "state.json");
+
+let baseCache: { url: string; exp: number } | null = null;
+
+function jabbyBase(): string {
+  const env = process.env.JABBY_URL?.trim();
+  if (env) return env.replace(/\/$/, "");
+  const now = Date.now();
+  if (baseCache && baseCache.exp > now) return baseCache.url;
+  let url = DEFAULT_BASE;
+  try {
+    const web = JSON.parse(readFileSync(STATE_FILE, "utf8"))?.web;
+    if (web && web.enabled !== false && web.host && web.port) {
+      url = `http://${web.host}:${web.port}`;
+    }
+  } catch {
+    // no state file / unreadable / malformed: fall back to the pinned
+    // default. a real outage then shows honestly via the status poller.
+  }
+  baseCache = { url, exp: now + 5000 };
+  return url;
+}
 
 const DEFAULT_TIMEOUT_MS = 2500;
 
@@ -50,7 +88,7 @@ async function jabbyFetch(
     init?.timeoutMs ?? DEFAULT_TIMEOUT_MS,
   );
   try {
-    return await fetch(`${JABBY_URL}${path}`, {
+    return await fetch(`${jabbyBase()}${path}`, {
       ...init,
       signal: controller.signal,
       cache: "no-store",
@@ -101,7 +139,7 @@ export async function chat(message: string): Promise<JabbyChat> {
     CHAT_CONNECT_TIMEOUT_MS,
   );
   try {
-    const res = await fetch(`${JABBY_URL}/api/chat`, {
+    const res = await fetch(`${jabbyBase()}/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message }),
