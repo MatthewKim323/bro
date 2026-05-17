@@ -37,6 +37,4 @@ the signature is a soft matcha-field vignette + film grain + a single
 dotted-grid corner. depth comes from tone and grain, never shadow. see
 `app/tokens.css` and `docs/BRO_PLAN.md` §3.
 
-## made by
 
-Kali Labs.
