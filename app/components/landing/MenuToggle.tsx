@@ -38,7 +38,7 @@ export function MenuToggle({
       aria-expanded={open}
       className="relative z-[70] flex h-11 w-11 items-center justify-center rounded-bro transition-opacity duration-200 ease-[var(--ease-bro)] hover:opacity-70"
     >
-      <svg width="22" height="22" viewBox="0 0 22 22">
+      <svg width="26" height="26" viewBox="0 0 22 22">
         <Stroke
           animate={open ? "open" : "closed"}
           variants={{

@@ -23,6 +23,7 @@ import {
   type TraceStep,
 } from "./useThreads";
 import { setBroBusy } from "./activity";
+import { useSettingsPrefs, redactFilter } from "./useSettingsPrefs";
 
 type Phase = "idle" | "waiting" | "streaming";
 
@@ -50,6 +51,12 @@ export function ChatPanel() {
   const taRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+
+  // appearance + behavior prefs. a ref mirrors them so the stable
+  // runStream callback reads the latest vocab without re-creating.
+  const [chatPrefs] = useSettingsPrefs();
+  const prefsRef = useRef(chatPrefs);
+  prefsRef.current = chatPrefs;
 
   const sending = live !== null;
 
@@ -89,7 +96,10 @@ export function ChatPanel() {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message }),
+          body: JSON.stringify({
+            message,
+            vocab: prefsRef.current.vocab,
+          }),
           signal: ctrl.signal,
         });
         if (!res.body) throw new Error("no stream");
@@ -202,7 +212,9 @@ export function ChatPanel() {
   );
 
   const send = useCallback(() => {
-    const text = input.trim();
+    // filter words are redacted client-side before the message is
+    // shown or sent: the transcript and jabby see the redaction.
+    const text = redactFilter(input.trim(), prefsRef.current.filters);
     if (!text || sending) return;
     const threadId = activeId ?? newThread().id;
     appendMessage(threadId, {
@@ -265,7 +277,7 @@ export function ChatPanel() {
   );
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col bg-[var(--chat-canvas,var(--color-bg))]">
       <div
         data-lenis-prevent
         className="min-h-0 flex-1 overflow-y-auto"
@@ -286,7 +298,7 @@ export function ChatPanel() {
           {messages.map((m) =>
             m.role === "user" ? (
               <div key={m.id} className="flex justify-end">
-                <div className="max-w-[80%] rounded-bro bg-surface px-4 py-2.5 text-[16px] leading-relaxed text-ink">
+                <div className="max-w-[80%] rounded-bro bg-[var(--chat-user-bubble,var(--color-surface))] px-4 py-2.5 text-[16px] leading-relaxed text-[var(--chat-user-text,var(--color-ink))]">
                   {m.text}
                 </div>
               </div>

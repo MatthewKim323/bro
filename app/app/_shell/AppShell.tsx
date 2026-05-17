@@ -18,6 +18,7 @@ import { useConnection } from "./useConnection";
 import { useBroBusy } from "./activity";
 import { useThreads } from "./useThreads";
 import { useLocalString } from "./useLocalStore";
+import { useSettingsPrefs, cssVarsFor } from "./useSettingsPrefs";
 import { panelForPath } from "./nav";
 
 const COLLAPSE_KEY = "bro.prefs.sidebarCollapsed.v1";
@@ -31,6 +32,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const busy = useBroBusy();
   const shownStatus = busy ? "thinking" : status;
   const { threads, activeId, newThread, select } = useThreads();
+  // appearance prefs as CSS custom properties on the shell root: they
+  // cascade to the sidebar bro mark (--bro-body-color) and chat.
+  const [appearance] = useSettingsPrefs();
 
   // sidebar preference persists via useSyncExternalStore (§9.4): no
   // mount effect, no hydration flash. server renders expanded, the
@@ -61,7 +65,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     // and it instantly goes still under prefers-reduced-motion (BRO_PLAN
     // §3.6 / UX rule). nothing below has to think about it again.
     <MotionConfig reducedMotion="user">
-      <div className="flex h-[100dvh] w-full overflow-hidden bg-bg">
+      <div
+        style={cssVarsFor(appearance)}
+        className="flex h-[100dvh] w-full overflow-hidden bg-bg"
+      >
         <Sidebar
           collapsed={collapsed}
           onToggleCollapsed={toggleCollapsed}

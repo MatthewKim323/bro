@@ -14,7 +14,6 @@
 // scroll), decoupled from ScrollTrigger/smoother init order so it is
 // reliable. honors prefers-reduced-motion.
 
-import Link from "next/link";
 import {
   useRef,
   useState,
@@ -63,12 +62,11 @@ export function Nav() {
     if (reduce || !navRef.current) return;
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ delay: 0.15 });
-      // the whole bar fades + drops in (this is the only opacity tween,
-      // so it never fights the CTA's own css opacity transition). then
-      // the brand + actions get a transform-ONLY stagger (no opacity),
-      // so the get bro button glides in smoothly instead of popping.
-      // clearProps wipes residual transforms so nothing remains to
-      // hijack the menu's fixed positioning.
+      // the whole bar fades + drops in (the only opacity tween). then
+      // the brand gets a transform-ONLY stagger (no opacity), so it
+      // glides in smoothly instead of popping. clearProps wipes
+      // residual transforms so nothing remains to hijack the menu's
+      // fixed positioning.
       tl.from(navRef.current, {
         yPercent: -130,
         opacity: 0,
@@ -142,18 +140,11 @@ export function Nav() {
         >
           <BroMark
             className={`transition-[height,width] duration-500 ease-[var(--ease-bro)] ${
-              scrolled ? "h-8 w-8" : "h-9 w-9"
+              scrolled ? "h-9 w-9" : "h-10 w-10"
             }`}
           />
         </a>
-        <div className="flex items-center gap-7 text-sm text-soft">
-          <Link
-            href="/app"
-            data-sauce
-            className="rounded-bro bg-accent px-5 py-2.5 font-medium text-bg transition-opacity duration-200 ease-[var(--ease-bro)] hover:opacity-85"
-          >
-            get bro
-          </Link>
+        <div className="flex items-center text-sm text-soft">
           <MobileMenu />
         </div>
       </div>

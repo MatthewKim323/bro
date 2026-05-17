@@ -55,7 +55,7 @@ const FEATURES: Feature[] = [
     // body + inline spec chips + button. different texture again.
     k: "solana",
     t: "paper-trades memecoins",
-    body: "bro watches real Solana movers and trades them on a simulated wallet. you follow the calls without risking a cent.",
+    body: "chat with bro about what is on your watchlist, or not. he runs the research himself, reads the real Solana flow, and weighs it against what he already knows about you, then trades the calls on a simulated wallet at live prices.",
     chips: ["real prices", "simulated wallet", "zero real keys"],
     cta: { label: "open the trade panel", href: "/app" },
   },

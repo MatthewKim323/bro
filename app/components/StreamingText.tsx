@@ -17,7 +17,7 @@ type StreamingTextProps = {
 
 export function StreamingText({ text, streaming = false }: StreamingTextProps) {
   return (
-    <div className="bro-body whitespace-pre-wrap break-words text-[17px] leading-[1.7] text-ink">
+    <div className="bro-body whitespace-pre-wrap break-words text-[17px] leading-[1.7] text-[var(--chat-bro-text,var(--color-ink))]">
       {text}
       {streaming && (
         <span
