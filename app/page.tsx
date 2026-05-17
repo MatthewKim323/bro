@@ -8,14 +8,15 @@ import { MatchaField } from "@/app/components/MatchaField";
 import { DottedGrid } from "@/app/components/DottedGrid";
 import { Reveal } from "@/lib/motion";
 import { Nav } from "@/app/components/landing/Nav";
-import { BroMark } from "@/app/components/landing/BroMark";
 import RotatingText from "@/app/components/landing/RotatingText";
 import { TechStack } from "@/app/components/landing/TechStack";
 import { IPhone } from "@/app/components/landing/IPhone";
 import { PhoneChat } from "@/app/components/landing/PhoneChat";
 import { Features } from "@/app/components/landing/Features";
+import { Grainient } from "@/app/components/landing/Grainient";
 import { Waitlist } from "@/app/components/landing/Waitlist";
 import { Footer } from "@/app/components/landing/Footer";
+import { DarkZone } from "@/app/components/landing/DarkZone";
 import { SmoothScroll } from "@/app/components/landing/SmoothScroll";
 
 export default function Home() {
@@ -31,19 +32,32 @@ export default function Home() {
         className="relative flex min-h-[100svh] items-center overflow-hidden"
       >
         <MatchaField />
+        {/* painterly meadow, overlaid on the green half. masked on the
+            same 104deg axis as the matcha gradient (now revealing more
+            of the image for a smoother horizontal fade) AND fading out
+            toward the hero bottom so it melts into the next section.
+            the two masks are intersected. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-0 bg-cover bg-left bg-no-repeat opacity-[0.44]"
+          style={{
+            backgroundImage: "url(/hero-field.png)",
+            WebkitMaskImage:
+              "linear-gradient(104deg, #000 0%, #000 34%, rgba(0,0,0,0.6) 56%, transparent 80%), linear-gradient(to bottom, #000 55%, transparent 100%)",
+            WebkitMaskComposite: "source-in",
+            maskImage:
+              "linear-gradient(104deg, #000 0%, #000 34%, rgba(0,0,0,0.6) 56%, transparent 80%), linear-gradient(to bottom, #000 55%, transparent 100%)",
+            maskComposite: "intersect",
+          }}
+        />
         <DottedGrid corner="tr" size={320} />
 
         <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-12 px-8 py-16 sm:px-16 lg:grid-cols-[6fr_5fr] lg:gap-10 lg:py-24">
           <div>
             <Reveal>
-              <div className="flex items-center gap-3 sm:gap-5">
-                <span aria-hidden className="bro-brand">
-                  <BroMark className="h-[clamp(4rem,12vw,8rem)] w-[clamp(4rem,12vw,8rem)]" />
-                </span>
-                <h1 className="bro-display text-[clamp(4.5rem,13vw,9rem)] leading-none text-ink">
-                  bro.
-                </h1>
-              </div>
+              <h1 className="bro-pushed bro-display text-[clamp(4.5rem,13vw,9rem)] leading-none text-ink">
+                bro.
+              </h1>
             </Reveal>
             <Reveal delay={0.08}>
               <div className="mt-5 flex items-baseline gap-2">
@@ -104,9 +118,56 @@ export default function Home() {
         </div>
       </section>
 
-          <Features />
-          <Waitlist />
-          <Footer />
+          <div className="relative pt-24 sm:pt-32">
+            {/* cream fade at the hero/features seam (this sits exactly
+                at 100svh, so it is below the fold and never visible
+                while the hero fills the screen, the fade only engages
+                once you scroll past the full hero). */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-56 bg-gradient-to-b from-bg to-transparent"
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 opacity-30"
+              style={{
+                WebkitMaskImage:
+                  "linear-gradient(to bottom, transparent 0, #000 180px, #000 calc(100% - 180px), transparent 100%)",
+                maskImage:
+                  "linear-gradient(to bottom, transparent 0, #000 180px, #000 calc(100% - 180px), transparent 100%)",
+              }}
+            >
+              <Grainient
+                color1="#a8b89a"
+                color2="#7e9270"
+                color3="#5e7351"
+                timeSpeed={1.3}
+                colorBalance={0.0}
+                warpStrength={3.1}
+                warpFrequency={5.0}
+                warpSpeed={2.0}
+                warpAmplitude={50.0}
+                blendAngle={0.0}
+                blendSoftness={0.05}
+                rotationAmount={500.0}
+                noiseScale={2.0}
+                grainAmount={0.1}
+                grainScale={2.0}
+                grainAnimated={false}
+                contrast={1.25}
+                gamma={1.45}
+                saturation={1.0}
+                centerX={0.0}
+                centerY={0.0}
+                zoom={0.9}
+              />
+            </div>
+            <Features />
+          </div>
+          <DarkZone>
+            <Waitlist />
+            <Footer />
+          </DarkZone>
         </main>
       </SmoothScroll>
     </>

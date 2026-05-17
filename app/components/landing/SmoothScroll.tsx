@@ -19,17 +19,26 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
   const content = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
+    // every load starts at the top: the browser otherwise restores the
+    // last position and ScrollSmoother replays it into its proxy.
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
+
     const reduce = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
     if (reduce || !wrapper.current || !content.current) return;
     const ctx = gsap.context(() => {
-      ScrollSmoother.create({
+      const smoother = ScrollSmoother.create({
         wrapper: wrapper.current as HTMLElement,
         content: content.current as HTMLElement,
         smooth: 1,
         effects: true,
       });
+      smoother.scrollTop(0);
+      ScrollTrigger.refresh();
     });
     return () => ctx.revert();
   }, []);

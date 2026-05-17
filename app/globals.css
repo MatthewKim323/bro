@@ -15,9 +15,10 @@ body {
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  /* anchor jumps (menu, nav, back to top) glide instead of cutting.
-     native, no Lenis. the reduced-motion block below forces auto. */
-  scroll-behavior: smooth;
+  /* no CSS scroll-behavior: it fights GSAP ScrollSmoother (it hijacks
+     the programmatic scroll writes ScrollSmoother/ScrollTrigger make to
+     re-sync, desyncing the proxy and landing the page mid-document on
+     reload). ScrollSmoother owns smoothing on the landing already. */
 }
 
 /* ──────────────────── base typography ───────────────────── */

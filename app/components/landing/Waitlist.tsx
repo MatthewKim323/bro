@@ -1,13 +1,11 @@
 "use client";
 
-// real waitlist. the email is written to MongoDB Atlas and the count
-// is read back from it. honest states: if storage isn't configured it
-// says so instead of faking a success.
+// "want to know more" capture. the email is written to MongoDB Atlas
+// and the count is read back from it. honest states: if storage isn't
+// configured it says so instead of faking a success.
 
 import { useEffect, useState } from "react";
-import { Label } from "@/app/components/Label";
 import { Button } from "@/app/components/Button";
-import { MatchaField } from "@/app/components/MatchaField";
 import { Reveal } from "@/lib/motion";
 
 type Status = "idle" | "sending" | "done" | "error" | "unconfigured";
@@ -60,25 +58,23 @@ export function Waitlist() {
   }
 
   return (
-    <section id="waitlist" className="relative mx-auto mt-28 w-full max-w-6xl scroll-mt-24 overflow-hidden rounded-bro px-8 py-24 sm:px-16">
-      <MatchaField variant="soft" />
+    <section id="waitlist" className="relative mx-auto w-full max-w-6xl scroll-mt-24 px-8 pb-28 pt-44 sm:px-16">
       <div className="relative z-10 max-w-xl">
         <Reveal>
-          <Label>be first</Label>
-          <h2 className="bro-display mt-4 text-4xl text-ink sm:text-5xl">
-            get bro before everyone else.
+          <h2 className="bro-display text-4xl text-bg sm:text-5xl">
+            want to keep up with bro?
           </h2>
-          <p className="bro-body mt-5 text-lg">
+          <p className="bro-body mt-5 text-lg text-bg/85">
             {count != null
-              ? `${count.toLocaleString()} already on the list.`
-              : "drop your email. no spam, just the invite."}
+              ? `${count.toLocaleString()} already keeping up.`
+              : "drop your email, we'll keep you in the loop."}
           </p>
         </Reveal>
 
         <Reveal delay={0.1}>
           {status === "done" ? (
-            <p className="mt-9 text-lg text-ink">
-              you&rsquo;re in. bro will reach out.
+            <p className="mt-9 text-lg text-bg">
+              got it. we&rsquo;ll be in touch.
             </p>
           ) : (
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -88,18 +84,18 @@ export function Waitlist() {
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && join()}
                 placeholder="you@email.com"
-                className="min-w-0 flex-1 rounded-bro border border-line bg-bg px-5 py-3.5 text-[15px] text-ink outline-none placeholder:text-soft/70 focus:border-accent/50"
+                className="min-w-0 flex-1 rounded-bro border border-bg/20 bg-bg px-5 py-3.5 text-[15px] text-ink outline-none placeholder:text-soft/70 focus:border-bg/50"
               />
               <Button
                 onClick={join}
                 disabled={status === "sending"}
-                className="px-7 py-3.5"
+                className="bg-bg! text-accent! px-7 py-3.5"
               >
-                {status === "sending" ? "joining..." : "join the waitlist"}
+                {status === "sending" ? "sending..." : "send it"}
               </Button>
             </div>
           )}
-          {msg && <p className="mt-4 text-sm text-soft">{msg}</p>}
+          {msg && <p className="mt-4 text-sm text-bg/70">{msg}</p>}
         </Reveal>
       </div>
     </section>

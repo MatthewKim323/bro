@@ -19,7 +19,7 @@ export function BroMark({ className = "" }: { className?: string }) {
         width="48"
         height="50"
         rx="21"
-        fill="var(--color-sage-deep)"
+        fill="var(--bro-body-color, var(--color-sage-deep))"
       />
       <rect
         className="bro-eye"

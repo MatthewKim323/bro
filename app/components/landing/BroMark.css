@@ -32,3 +32,39 @@
     animation: none;
   }
 }
+
+/* bro rolls in from the left (rotating like a wheel) and drives the
+   wordmark rightward into place, a beat behind him. one shot on load,
+   calm, GPU transform. reduced motion: snap to final, no roll. */
+.bro-rollin {
+  animation: bro-rollin 1.8s var(--ease-bro) both;
+}
+@keyframes bro-rollin {
+  from {
+    transform: translateX(-7rem) rotate(-300deg);
+  }
+  to {
+    transform: translateX(0) rotate(0deg);
+  }
+}
+
+.bro-pushed {
+  animation: bro-pushed 1.2s var(--ease-bro) 0.45s both;
+}
+@keyframes bro-pushed {
+  from {
+    transform: translateX(-2.5rem);
+    opacity: 0.001;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bro-rollin,
+  .bro-pushed {
+    animation: none;
+  }
+}
