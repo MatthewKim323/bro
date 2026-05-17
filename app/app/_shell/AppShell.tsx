@@ -11,8 +11,8 @@ import { useCallback, useEffect, useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { StatusBar } from "./StatusBar";
 import { CommandPalette } from "./CommandPalette";
-import { ContinuityNote } from "./ContinuityNote";
 import { useConnection } from "./useConnection";
+import { useBroBusy } from "./activity";
 import { useThreads } from "./useThreads";
 import { useLocalString } from "./useLocalStore";
 import { panelForPath } from "./nav";
@@ -23,6 +23,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() ?? "/app";
   const panel = panelForPath(pathname);
   const { status } = useConnection();
+  // "thinking" overrides the connection word while bro is mid-reply
+  // (UX rule 5: one liveness truth, and it never lies).
+  const busy = useBroBusy();
+  const shownStatus = busy ? "thinking" : status;
   const { threads, activeId, newThread, select } = useThreads();
 
   // sidebar preference persists via useSyncExternalStore (§9.4): no
@@ -62,7 +66,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <StatusBar
-          status={status}
+          status={shownStatus}
           panel={panel}
           onOpenPalette={() => setPaletteOpen(true)}
         />
@@ -71,7 +75,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           className="relative min-h-0 flex-1 overflow-y-auto"
         >
           {children}
-          {panel === "chat" && <ContinuityNote />}
         </main>
       </div>
 

@@ -82,3 +82,47 @@ export async function getState(): Promise<JabbyState | null> {
     return null;
   }
 }
+
+export type JabbyChat =
+  | { ok: true; stream: ReadableStream<Uint8Array> }
+  | { ok: false; message: string };
+
+const CHAT_CONNECT_TIMEOUT_MS = 8000;
+
+// open jabby's /api/chat and hand back the raw SSE body. the connect is
+// bounded (a dead daemon fails fast and calmly) but the STREAM is not:
+// once headers arrive we clear the timeout so a long reply can flow for
+// as long as jabby needs. jabby is stateless here, one message in, a
+// stream out, no session id (BRO_PLAN.md §8.1 / §9.2).
+export async function chat(message: string): Promise<JabbyChat> {
+  const controller = new AbortController();
+  const timeout = setTimeout(
+    () => controller.abort(),
+    CHAT_CONNECT_TIMEOUT_MS,
+  );
+  try {
+    const res = await fetch(`${JABBY_URL}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+      signal: controller.signal,
+      cache: "no-store",
+    });
+    clearTimeout(timeout);
+    if (!res.ok || !res.body) {
+      return {
+        ok: false,
+        message:
+          "bro could not reach jabby just now. is jabby's web server on?",
+      };
+    }
+    return { ok: true, stream: res.body };
+  } catch {
+    clearTimeout(timeout);
+    return {
+      ok: false,
+      message:
+        "bro could not reach jabby just now. is jabby's web server on?",
+    };
+  }
+}
