@@ -5,8 +5,9 @@
 // no shadow. tabs are Fraunces with a tracked index, deliberately spaced.
 // esc closes, body scroll locks while open, any tab closes it.
 
-import { useEffect } from "react";
+import { useEffect, type MouseEvent } from "react";
 import { motion, useCycle, type Variants } from "motion/react";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { BroMark } from "./BroMark";
 import { MenuToggle } from "./MenuToggle";
 import { BRO_EASE } from "@/lib/motion";
@@ -14,7 +15,7 @@ import { BRO_EASE } from "@/lib/motion";
 const TABS = [
   { label: "home", href: "#top" },
   { label: "what it does", href: "#features" },
-  { label: "the waitlist", href: "#waitlist" },
+  { label: "keep up", href: "#waitlist" },
 ];
 
 const panel: Variants = {
@@ -56,6 +57,29 @@ export function MobileMenu() {
     };
   }, [open, toggleOpen]);
 
+  // anchor links must go through ScrollSmoother (it owns scroll via a
+  // transform, so a native #hash jump desyncs or does nothing). close
+  // the menu, then scroll with the section top cleared of the fixed
+  // nav. native smooth-scroll fallback when there is no smoother
+  // (reduced motion).
+  const go = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    toggleOpen();
+    window.setTimeout(() => {
+      const target = document.querySelector(href);
+      if (!target) return;
+      const smoother = ScrollSmoother.get();
+      if (smoother) {
+        smoother.scrollTo(target as Element, true, "top 84px");
+      } else {
+        (target as HTMLElement).scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 60);
+  };
+
   return (
     <>
       <MenuToggle open={open} toggle={() => toggleOpen()} />
@@ -83,7 +107,7 @@ export function MobileMenu() {
               <motion.li key={t.href} variants={item}>
                 <a
                   href={t.href}
-                  onClick={() => toggleOpen()}
+                  onClick={(e) => go(e, t.href)}
                   className="group block py-5 transition-opacity duration-200 ease-[var(--ease-bro)]"
                 >
                   <span className="bro-display text-4xl text-ink transition-colors duration-200 ease-[var(--ease-bro)] group-hover:text-accent sm:text-5xl">

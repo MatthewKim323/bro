@@ -5,6 +5,7 @@
 
 import { ScrollReveal } from "./ScrollReveal";
 import { PaperTradeChat } from "./PaperTradeChat";
+import { MessagingOrbit } from "./MessagingOrbit";
 
 const FEATURES = [
   {
@@ -40,11 +41,7 @@ export function Features() {
             f.k === "solana" ? "mb-28 sm:mb-44" : ""
           }`}
         >
-          <div
-            className={`mx-auto flex max-w-6xl flex-col justify-center px-8 sm:px-16 ${
-              f.k === "solana" ? "py-12" : "min-h-[60vh] py-20"
-            }`}
-          >
+          <div className="mx-auto flex min-h-[60vh] max-w-6xl flex-col justify-center px-8 py-20 sm:px-16">
             <ScrollReveal>
               {f.k === "solana" ? (
                 <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
@@ -58,6 +55,34 @@ export function Features() {
                     <p className="bro-body mt-6 max-w-xl text-base leading-relaxed sm:text-lg">
                       {f.d}
                     </p>
+                  </div>
+                </div>
+              ) : f.k === "one brain" ? (
+                <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+                  <div className="hidden lg:block" />
+                  <div>
+                    <h3 className="bro-display text-4xl leading-[1.04] text-ink sm:text-6xl">
+                      {f.t}
+                    </h3>
+                    <p className="bro-body mt-6 max-w-xl text-base leading-relaxed sm:text-lg">
+                      {f.d}
+                    </p>
+                  </div>
+                </div>
+              ) : f.k === "always on" ? (
+                <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+                  <div>
+                    <h3 className="bro-display max-w-xl text-4xl leading-[1.04] text-ink sm:text-6xl">
+                      {f.t}
+                    </h3>
+                    <p className="bro-body mt-6 max-w-xl text-base leading-relaxed sm:text-lg">
+                      {f.d}
+                    </p>
+                  </div>
+                  <div className="flex justify-center lg:justify-end">
+                    <div className="w-full max-w-md">
+                      <MessagingOrbit />
+                    </div>
                   </div>
                 </div>
               ) : (
